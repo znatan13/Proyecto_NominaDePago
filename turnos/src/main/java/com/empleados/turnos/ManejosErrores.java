@@ -43,6 +43,8 @@ public class ManejosErrores {
         return ResponseEntity.badRequest().body(errorDTO);
     }
 
+    //En este microservicio no existen duplicados en la base de datos.
+    //De todas formas se hace la excepcion para buenas practicas.
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDTO> manejarErroresBaseDatos(
 
@@ -57,4 +59,19 @@ public class ManejosErrores {
                 request.getRequestURI());
         return ResponseEntity.badRequest().body(errorDTO);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorDTO> manejosErrores(
+         RuntimeException ex,
+         HttpServletRequest request){
+
+            //Creamo el JSON con el error de get y delete
+            ErrorDTO errorDTO = new ErrorDTO(
+                LocalDateTime.now(),
+                400,
+                ex.getMessage(),
+                null,
+                request.getRequestURI());
+            return ResponseEntity.badRequest().body(errorDTO);
+         }
 }

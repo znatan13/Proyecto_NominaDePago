@@ -106,13 +106,13 @@ public class UsuarioService {
     // Delete: Metodo eliminar usuario
     public boolean eliminar(Integer id) {
         if (id == null) {
-          return false;
+            throw new RuntimeException("El id que busca para eliminar no existe");
         }
         if (repository.existsById(id)) { // pregunta ¿existe el id? si existe lo elimina
             repository.deleteById(id);
             return true; // deleteBtId -> es un void
         }
-        throw new RuntimeException("El id que desea eliminar no existe");
+        return false;
     }
 
     // -------------------- DTO uso exclusivos --------------------------------

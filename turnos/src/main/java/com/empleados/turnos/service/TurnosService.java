@@ -20,12 +20,14 @@ public class TurnosService {
     }
 
     // Metodo Get: buscar por id
-    public Optional<Turnos> buscarPorId(Integer turnoId) {
+    public Turnos buscarPorId(Integer turnoId) {
 
-        if (turnoId != null && turnoId > 0) { // si el id no es nulo y mayor a 0 lo busca
-            return repository.findById(turnoId);
+        Optional<Turnos> buscarTurno = repository.findById(turnoId);
+
+        if (buscarTurno == null) { // si el id no es nulo y mayor a 0 lo busca
+            throw new RuntimeException("El id no existe");
         }
-        return Optional.empty();
+        return buscarTurno.get();
     }
 
     // Metodo get: buscar por id del empleado
@@ -40,7 +42,8 @@ public class TurnosService {
     // Metodo post crear un turno
     public Optional<Turnos> crearTurno(Turnos turno) {
         /*
-         * No se valida duplicados porque el mismo empleado puede tener muchos turnos de
+         * No se valida duplicados aqui ni en la base de datos;porque el mismo empleado
+         * puede tener muchos turnos de
          * trabajo. nada es unico en este microservicio excepto el id turno que lo
          * asigna la base de datos. solo validamos que no sea nulo
          * ni que el id del empleado dea menor a 0
@@ -53,9 +56,9 @@ public class TurnosService {
     }
 
     // Metodo Put; Actualizar un turno.
-    public Optional<Turnos> actualizarId(Integer turnoId, Turnos turnoNuevo) {
+    public Turnos actualizarId(Integer turnoId, Turnos turnoNuevo) {
         if (turnoId == null) {
-            return Optional.empty();
+            throw new RuntimeException("El id que desea actualizar no existe");
         }
         Optional<Turnos> existe = repository.findById(turnoId);
 
@@ -67,10 +70,9 @@ public class TurnosService {
             turnos.setHoraFin(turnoNuevo.getHoraFin());
             turnos.setEstado(turnoNuevo.getEstado());
 
-            repository.save(turnos);
-            return Optional.of(turnos);
+            return repository.save(turnos);
         }
-        return Optional.empty();
+        throw new RuntimeException("No existe ese Id de turno");
     }
 
     // Metodo delete : eliminar turno por id
@@ -79,7 +81,7 @@ public class TurnosService {
             repository.deleteById(turnoId);
             return true;
         }
-        return false;
+        throw new RuntimeException("El id que quiere eliminar no existe");
     }
 
 }

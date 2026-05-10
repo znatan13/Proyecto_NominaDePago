@@ -33,11 +33,8 @@ public class TurnosController {
 
     @GetMapping("/buscar/turnoid/{turnoId}")
     public ResponseEntity<?> buscarIdTurno(@PathVariable Integer turnoId) {
-        Optional<Turnos> buscar = service.buscarPorId(turnoId);
-        if (buscar.isEmpty()) {
-            return ResponseEntity.status(404).body("EL Turno no existe");
-        }
-        return ResponseEntity.ok(buscar.get());
+        Turnos buscar = service.buscarPorId(turnoId);
+        return ResponseEntity.ok(buscar);
     }
 
     @GetMapping("/buscar/empleadoid/{empleadoId}")
@@ -57,20 +54,13 @@ public class TurnosController {
 
     @PutMapping("/actualizar/{turnoId}")
     public ResponseEntity<?> actualizar(@PathVariable Integer turnoId, @Valid @RequestBody Turnos turnoNuevo) {
-        Optional<Turnos> nuevo = service.actualizarId(turnoId, turnoNuevo);
-        if (nuevo.isEmpty()) {
-            return ResponseEntity.status(404).body("Turno no existe");
-        }
-        return ResponseEntity.ok(nuevo.get());
+         Turnos actualizar = service.actualizarId(turnoId, turnoNuevo);
+         return ResponseEntity.ok(actualizar);
     }
 
     @DeleteMapping("/eliminar/{turnoId}")
     public ResponseEntity<?> eliminar(@PathVariable Integer turnoId) {
         boolean eliminar = service.eliminarPorId(turnoId);
-
-        if (eliminar == false) {
-            return ResponseEntity.status(404).body("Turno no existe");
-        }
-        return ResponseEntity.ok("turno eliminado");
+        return ResponseEntity.status(200).body(eliminar);
     }
 }
