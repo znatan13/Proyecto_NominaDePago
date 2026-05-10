@@ -91,18 +91,8 @@ public class UsuarioController {
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarUsuarios(@PathVariable Integer id) {
-
-        try {
             boolean existe = service.eliminar(id);
-            if (existe) {
-                return ResponseEntity.ok().body("Eliminado con exito");
-            }
-            return ResponseEntity.status(404).body("Error al eliminar, intente de nuevo");
-
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error de la base de datos");
-
-        }
+            return ResponseEntity.status(200).body(existe);
     }
 
 }
