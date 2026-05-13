@@ -1,5 +1,7 @@
 package com.auth.autenticacion.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +33,7 @@ public class Usuario {
     private String nombreUsuario;
 
     @NotBlank(message = "La contraseña no puede estar vacia")
-    @Size(min = 8, max = 12, message = "La contraseña debe tener al menos 8 digitos y maximo 12 digitos")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
 

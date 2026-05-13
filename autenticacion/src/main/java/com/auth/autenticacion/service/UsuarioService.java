@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.auth.autenticacion.dto.BuscarDatosSegurosDTO;
@@ -18,6 +19,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /*
      * Metodo (get) listar todas las cuentas de usuarios,
@@ -76,6 +80,8 @@ public class UsuarioService {
         if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
             return null;
         }
+        String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
+        usuario.setPassword(passwordEncriptada);
         return repository.save(usuario);
     }
 
@@ -87,7 +93,6 @@ public class UsuarioService {
      * si la contraseña de la bd sea igual que del usuario que ingrese, si es cierto
      * retorna que existe y es valido
      */
-
     // Metodo put: Actualizar por id -> permitira actualizar todo lo que se requiera
     public Usuario actualizarPorId(Integer id, Usuario usuario) {
         Optional<Usuario> existe = repository.findById(id);
@@ -135,7 +140,6 @@ public class UsuarioService {
     }
 
     // DTO login seguro se evita filtrar la contraseña.
-
     public Optional<LoginSeguroDTO> loginSeguro(String nombreUsuario, String password) {
 
         if (nombreUsuario == null || nombreUsuario.isBlank() || password == null || password.isBlank()) {
