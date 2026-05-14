@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth.autenticacion.dto.BuscarDatosSegurosDTO;
 import com.auth.autenticacion.dto.LoginDTO;
 import com.auth.autenticacion.dto.LoginSeguroDTO;
+import com.auth.autenticacion.dto.UsuarioSeguroDTO;
 import com.auth.autenticacion.model.Usuario;
 import com.auth.autenticacion.service.UsuarioService;
 
@@ -40,17 +41,15 @@ public class UsuarioController {
     public ResponseEntity<?> listarUsuariosSeguros() {
         return ResponseEntity.ok(service.usuariosSeguros()); // Si sale biem retorna un 200
     }
-
-    /*
-     * solo hacemos get : buscar por email
-     * por que uno -> evitamos sobrecargar el contoller y
-     * dos -> es mas realista buscar por email, ademas buscar por nombre y id lo
-     * usamos
-     * de mejor forma en el service al momento de crear y login.
-     */
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarId(@PathVariable Integer id){
+        UsuarioSeguroDTO buscar = service.buscarIdDTO(id);
+        return ResponseEntity.ok(buscar);
+    }
 
     // Get buscar email del usuario con DTO para proteger los datos sensibles
-    @GetMapping("/buscar/email/{email}")
+    @GetMapping("/buscar")
     public ResponseEntity<?> buscarEmail(@PathVariable String email) {
         try {
             Optional<BuscarDatosSegurosDTO> existe = service.buscarEmailDTO(email);

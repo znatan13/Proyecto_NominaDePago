@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,17 +33,7 @@ public class UsuarioService {
         return repository.findAll();
     }
 
-    // Get : metodo buscar si existe (nombre usuario)
-    public Optional<Usuario> buscarPorNombre(String nombre) {
-
-        // Valida que no sea null, que no este en vacio ni que contenga espacios
-        if (nombre == null || nombre.isBlank()) {
-            return Optional.empty();
-        }
-        return repository.findByNombreUsuario(nombre);
-    }
-
-    // Get : buscar si existe email (Aun sin validaciones)
+    // Get : buscar si existe email 
     public Optional<Usuario> buscarEmail(String email) {
 
         // Valida que no sea null, que no este en vacio ni que contenga espacios
@@ -54,11 +46,11 @@ public class UsuarioService {
     // Get buscar por id
     public Usuario buscarPorId(Integer id) {
         Optional<Usuario> existeId = repository.findById(id);
-        if (existeId == null) {
-            throw new RuntimeException("El id que desea buscar no existe");
+        if (existeId.isPresent()) {
+           return existeId.get();
             // si el Id null, retornara un mensaje de excepcion
         }
-        return existeId.get(); // si optional viene con datos lo retorna
+        throw new RuntimeException("El id no existe");
     }
 
     // Post: Metodo crear cuenta usuario
@@ -85,25 +77,20 @@ public class UsuarioService {
         return repository.save(usuario);
     }
 
-    // Post : Login
-    /*
-     * validamos que nombreusuario y contraseña no tengam espacios ni que este
-     * vacio y que no sea nulo
-     * ademas se valida que:
-     * si la contraseña de la bd sea igual que del usuario que ingrese, si es cierto
-     * retorna que existe y es valido
-     */
     // Metodo put: Actualizar por id -> permitira actualizar todo lo que se requiera
     public Usuario actualizarPorId(Integer id, Usuario usuario) {
+        
         Optional<Usuario> existe = repository.findById(id);
-
         if (existe.isEmpty()) {
             throw new RuntimeException("El Id no existe");
         }
+
         Usuario usuarios = existe.get();
+        String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
+        
         usuarios.setNombreUsuario(usuario.getNombreUsuario());
-        usuarios.setPassword(usuario.getPassword());
         usuarios.setEmail(usuario.getEmail());
+        usuarios.setPassword(passwordEncriptada); // se encripta la contraseña antes de actualizarla
         usuarios.setRol(usuario.getRol());
         return repository.save(usuarios);
     }
@@ -111,13 +98,15 @@ public class UsuarioService {
     // Delete: Metodo eliminar usuario
     public boolean eliminar(Integer id) {
         if (id == null) {
-            throw new RuntimeException("El id que busca para eliminar no existe");
+            throw new RuntimeException("El id que busca para eliminar no existe"); 
+            //si el id llega ser nulo, retorna un mensaje de exception
         }
         if (repository.existsById(id)) { // pregunta ¿existe el id? si existe lo elimina
             repository.deleteById(id);
             return true; // deleteBtId -> es un void
         }
-        return false;
+        throw new RuntimeException("El id que busca para eliminar no existe");
+        // si el id no existe, retornara un mensaje de excepcion
     }
 
     // -------------------- DTO uso exclusivos --------------------------------
@@ -166,8 +155,8 @@ public class UsuarioService {
     }
 
     /*
-     * hago un Metodo para reutilizar codigo porque DTO de los 3 buscar
-     * nombre,email y id se repetia logica.
+     * hago un Metodo para reutilizar codigo porque DTO de los 2 buscar
+     * email y id se repetia logica.
      */
     public BuscarDatosSegurosDTO buscarDatos(Usuario usuario) {
         BuscarDatosSegurosDTO dto = new BuscarDatosSegurosDTO();
@@ -178,29 +167,11 @@ public class UsuarioService {
         return dto;
     }
 
-    // DTO para buscar nombreUsuario.
-    public Optional<BuscarDatosSegurosDTO> buscarNombreDTO(String nombre) {
-
-        if (nombre == null || nombre.isBlank()) {
-            return Optional.empty();
-        }
-        Optional<Usuario> users = repository.findByNombreUsuario(nombre);
-
-        if (users.isEmpty()) {
-            return Optional.empty();
-        }
-        // Si el usuario existe y se buscara en la base de datoss y se retorna por el
-        // .get()
-        // Traera todos los datos necesarios del DTO
-        return Optional.of(buscarDatos(users.get()));
-
         /*
          * Al utilizar el metodo buscarDatos estamos reutilizando codigo
          * se utilizara para los otros 2 metodos buscar id y email, porque se repite
          * logica
          */
-    }
-
     // DTO para buscar email.
     public Optional<BuscarDatosSegurosDTO> buscarEmailDTO(String email) {
 
@@ -217,17 +188,26 @@ public class UsuarioService {
     }
 
     // DTO para buscar id.
-    public Optional<BuscarDatosSegurosDTO> buscarIdDTO(Integer id) {
+    // al utilizar DTO para buscar id, evitamos mostrar datos sensibles 
+    public UsuarioSeguroDTO buscarIdDTO(Integer id) {
 
         if (id == null) {
-            return Optional.empty();
+            throw new RuntimeException("El id no existe");
         }
         Optional<Usuario> users = repository.findById(id);
 
-        if (users.isEmpty()) {
-            return Optional.empty();
+        if(users.isEmpty()){
+            throw new RuntimeException("El id no existe");
         }
-        return Optional.of(buscarDatos(users.get()));
+
+        Usuario usuario = users.get();
+        UsuarioSeguroDTO dto = new UsuarioSeguroDTO();
+        dto.setNombreUsuario(usuario.getNombreUsuario());
+        dto.setEmail(usuario.getEmail());
+
+        return dto;
+
     }
+
 
 }
