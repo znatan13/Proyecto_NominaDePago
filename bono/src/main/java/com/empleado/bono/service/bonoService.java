@@ -6,41 +6,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.empleado.bono.model.Bono;
-import com.empleado.bono.repository.bonoRepository;
+import com.empleado.bono.repository.BonoRepository;
 
 @Service
-public class bonoService {
+public class BonoService {
 
     @Autowired
-    private bonoRepository bonoRepository;
+    private BonoRepository bonoRepository;
 
     public List<Bono> listar() {
         return bonoRepository.findAll();
     }
 
     public Bono guardar(Bono bono) {
-        return bono;
+        return bonoRepository.save(bono);
     }
 
-    public Bono buscar(Long id) {
+    public Bono buscar(Integer id) {
         return bonoRepository.findById(id).orElseThrow(() -> new RuntimeException("Bono no encontrado"));
     }
 
-    public Bono actualizar(Long id, Bono nuevoBono) {
+    public Bono actualizar(Integer id, Bono nuevoBono) {
+
         Bono bono = buscar(id);
 
         bono.setNombreEmpleado(nuevoBono.getNombreEmpleado());
         bono.setTipoBono(nuevoBono.getTipoBono());
-        bono.setFechaAsignacion(nuevoBono.getFechaAsignacion());
-        bono.setMonto(nuevoBono.getMonto());
-        bono.setEstado(nuevoBono.getEstado());
+        bono.setBonoEmpleado(nuevoBono.getBonoEmpleado());
+        bono.setEmpleadoid(id);
 
         return bonoRepository.save(bono);
-        
-    }
-
-    public void eliminar(Long id) {
-        bonoRepository.deleteById(id);
     }
 
 }
