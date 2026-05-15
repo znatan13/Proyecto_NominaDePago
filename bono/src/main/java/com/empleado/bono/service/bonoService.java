@@ -30,10 +30,8 @@ public class BonoService {
 
         Bono bono = buscar(id);
 
-        bono.setNombreEmpleado(nuevoBono.getNombreEmpleado());
         bono.setTipoBono(nuevoBono.getTipoBono());
         bono.setBonoEmpleado(nuevoBono.getBonoEmpleado());
-        bono.setEmpleadoid(id);
 
         return bonoRepository.save(bono);
     }

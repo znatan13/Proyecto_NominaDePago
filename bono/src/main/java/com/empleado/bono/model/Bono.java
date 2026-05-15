@@ -25,13 +25,6 @@ public class Bono {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Positive(message = "El id del empleado debe ser mayor a 0")
-    @Column(nullable = false)
-    private Integer empleadoid;
-
-    @NotBlank(message = "El nombre del empleado es obligatorio")
-    private String nombreEmpleado;
-
     @NotBlank(message = "El tipo de bono es obligatorio")
     private String tipoBono;
 
