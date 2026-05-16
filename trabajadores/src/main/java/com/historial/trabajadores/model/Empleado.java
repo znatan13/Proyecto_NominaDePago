@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -55,7 +56,7 @@ public class Empleado {
     @Column(nullable = false)
     private String estadoCivil;
 
-    @NotBlank(message = "La fecha de contrato del empleado no puede estar vacia")
+    @NotNull(message = "La fecha de contrato del empleado no puede ser nula")
     @Column(nullable = false)
     private LocalDate fechaContrato;
     //la fecha de baja puede ser null, porque el empleado puede estar activo

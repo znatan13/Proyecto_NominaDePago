@@ -1,13 +1,11 @@
 package com.historial.trabajadores.controller;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,54 +60,23 @@ public class EmpleadoController {
 
         }
     }
-
-    /*
-     * No implementamos los metodos buscar por email ni por numero de telefono, ya
-     * que funcionan internamente (al igual que buscar por rut)
-     * en el service para validar al crear al empleado., ademas evitamos sobrecargar
-     * el controller
-     */
     @PostMapping("/crear")
-    public ResponseEntity<?> crearEmpleados(@Valid @RequestBody Empleado empleado, BindingResult resultado) {
+    public ResponseEntity<?> crearEmpleados(@Valid @RequestBody Empleado empleado) {
         Empleado empleadoNuevo = service.crearEmpleado(empleado);
         return ResponseEntity.status(201).body(empleadoNuevo);
     }
 
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<?> actualizarEmpleado(@Valid @PathVariable Integer id, @RequestBody Empleado empleado,
-            BindingResult result) {
-
-        if (result.hasErrors()) {
-            Map<String, String> error = new HashMap<>();
-            result.getFieldErrors().forEach(errores -> error.put(errores.getField(), errores.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(error);
-        }
-        try {
-            Optional<Empleado> existe = service.actualizarPorId(id, empleado);
-            if (existe.isEmpty()) {
-                return ResponseEntity.status(404).body("Datos erroneos intente denuevo");
-            }
-            return ResponseEntity.status(200).body("Empleado actualizado con exito");
-        } catch (Exception error) {
-            return ResponseEntity.status(500).body("Error del sistema");
-
-        }
+    public ResponseEntity<?> actualizarEmpleado(@PathVariable Integer id, @Valid @RequestBody Empleado empleado){
+        Empleado empleadoActualizado = service.actualizarPorId(id, empleado);
+        return ResponseEntity.ok().body(empleadoActualizado);
     }
+    
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarEmpleado(@PathVariable Integer id) {
-        try {
-
-            boolean eliminar = service.eliminarEmpleado(id);
-            if (eliminar) {
-                return ResponseEntity.status(200).body("El id ha sido eliminado!!");
-            }
-            return ResponseEntity.status(404).body("EL id que quiere eliminar no existe");
-
-        } catch (Exception error) {
-            return ResponseEntity.status(500).body("Error de la base de datos");
-
-        }
+        service.eliminarEmpleado(id);
+        return ResponseEntity.ok().body("El empleado ha sido eliminado");
     }
 
 }

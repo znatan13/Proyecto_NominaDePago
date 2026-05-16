@@ -58,39 +58,41 @@ public class EmpleadoService {
         return repository.findByNumeroTelefono(numeroTelefono);
     }
 
-    // Metodo post crear un empleado
-    public Empleado crearEmpleado(Empleado empleadoNuevo) {
-
-        if (empleadoNuevo == null) {
-            throw new IllegalArgumentException("El empleado no puede estar null");
+    public void validarEmpleado(Empleado empleadoNuevo){
+        if(empleadoNuevo == null){
+            throw new IllegalArgumentException("El empleado no puede ser nulo");
         }
-        //validamos que el sueldo base no sea negativo
         if(empleadoNuevo.getSueldoBase() <= 0){
-            throw new IllegalArgumentException("El sueldo base no puede estar en negativo");
+            throw new IllegalArgumentException("El sueldo base no puede ser negativo");
         }
-        
-        //si el estado no es activo por el ! y el estado no es inactivo cae el mensaje de error 
         if(!"Activo".equals(empleadoNuevo.getEstado()) && !"Inactivo".equals(empleadoNuevo.getEstado())){
-            throw new IllegalArgumentException("El estado del empleado es Activo/Inactivo");
+            throw new IllegalArgumentException("El empleado debe tener un estado activo o inactivo");
         }
         if("Activo".equals(empleadoNuevo.getEstado()) && empleadoNuevo.getFechaDeBaja() != null){
-            throw new IllegalArgumentException("EL empleado activo no puede tener fecha de baja debe estar vacia o null");
+            throw new IllegalArgumentException("El empleado activo no puede tener fecha de baja");
         }
-        if("Inactivo".equals(empleadoNuevo.getEstado()) && empleadoNuevo.getFechaDeBaja() == null){
+        if ("Inactivo".equals(empleadoNuevo.getEstado()) && empleadoNuevo.getFechaDeBaja() == null){
             throw new IllegalArgumentException("El empleado inactivo debe tener una fecha de baja");
         }
+    }
+
+    // Metodo post crear un empleado
+    public Empleado crearEmpleado(Empleado empleadoNuevo) {
+        validarEmpleado(empleadoNuevo);
         return repository.save(empleadoNuevo);
     }
 
     // Metodo put actualizar por id
-    public Optional<Empleado> actualizarPorId(Integer id, Empleado empleadoNuevo) {
+    public Empleado actualizarPorId(Integer id, Empleado empleadoNuevo) {
         if (id == null) {
-            return Optional.empty();
+            throw new IllegalArgumentException("El id no puede estar null");
         }
+        validarEmpleado(empleadoNuevo); // validamos el empleado del metodo reautilzado
         Optional<Empleado> existe = repository.findById(id);
         if (existe.isEmpty()) {
-            return Optional.empty();
+            throw new RuntimeException("El id que desea actualizar no existe");
         }
+        
         Empleado empleado = existe.get();
         empleado.setRut(empleadoNuevo.getRut());
         empleado.setNombre(empleadoNuevo.getNombre());
@@ -106,17 +108,16 @@ public class EmpleadoService {
         empleado.setSueldoBase(empleadoNuevo.getSueldoBase());
         empleado.setAfp(empleadoNuevo.getAfp());
 
-        repository.save(empleado);
-        return Optional.of(empleado);
+       return repository.save(empleado);
     }
 
     // Metodo delete eliminar por id
-    public boolean eliminarEmpleado(Integer id) {
+    public void eliminarEmpleado(Integer id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
-            return true;
+        }else{
+            throw new RuntimeException("El id que desea eliminar no existe");
         }
-        return false;
     }
 
     // ------ Metodos DTO ---------
