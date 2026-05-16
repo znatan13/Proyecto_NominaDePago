@@ -1,5 +1,7 @@
 package com.historial.trabajadores.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -53,14 +55,12 @@ public class Empleado {
     @Column(nullable = false)
     private String estadoCivil;
 
-    @NotBlank(message = "La fecha de ingreso del empleado no puede estar vacia")
+    @NotBlank(message = "La fecha de contrato del empleado no puede estar vacia")
     @Column(nullable = false)
-    private String fechaIngreso;
-
-    // No obligatorio porque si un empleado esta activo es opcional la fecha de
-    // salida
-    @Column(nullable = false)
-    private String fechaSalida;
+    private LocalDate fechaContrato;
+    //la fecha de baja puede ser null, porque el empleado puede estar activo
+    @Column(nullable = true)
+    private LocalDate fechaDeBaja;
 
     @NotBlank(message = "El cargo del empleado no puede estar vacio")
     @Column(nullable = false)
@@ -73,5 +73,9 @@ public class Empleado {
     @Positive(message = "El sueldo base del empleado debe ser un numero positivo")
     @Column(nullable = false)
     private double sueldoBase;
+
+    @NotBlank(message = "El afp del empleado no puede estar Vacio")
+    @Column(nullable = false)
+    private String afp;
 
 }

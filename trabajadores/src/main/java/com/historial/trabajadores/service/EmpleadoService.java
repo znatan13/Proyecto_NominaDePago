@@ -3,7 +3,7 @@ package com.historial.trabajadores.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import com.historial.trabajadores.dto.EmpleadoDTO;
@@ -12,8 +12,12 @@ import com.historial.trabajadores.repository.EmpleadoRepository;
 
 @Service
 public class EmpleadoService {
-    @Autowired
-    private EmpleadoRepository repository;
+    
+    private final EmpleadoRepository repository;
+
+    public EmpleadoService(EmpleadoRepository repository) {
+        this.repository = repository;
+    }
 
     // Metodo get listar empleado
     public List<Empleado> listar() {
@@ -55,23 +59,27 @@ public class EmpleadoService {
     }
 
     // Metodo post crear un empleado
-    public Optional<Empleado> crearEmpleado(Empleado empleado) {
+    public Empleado crearEmpleado(Empleado empleadoNuevo) {
 
-        // 1ero validamos que no este null
-        if (empleado == null) {
-            return Optional.empty();
+        if (empleadoNuevo == null) {
+            throw new IllegalArgumentException("El empleado no puede estar null");
         }
-        // Consultamos en la base de datos si existe
-        Optional<Empleado> existeRut = repository.findByRut(empleado.getRut());
-        Optional<Empleado> existeEmail = repository.findByEmailIgnoreCase(empleado.getEmail());
-        Optional<Empleado> existeNumeroTelefono = repository.findByNumeroTelefono(empleado.getNumeroTelefono());
-
-        if (existeRut.isPresent() || existeEmail.isPresent() || existeNumeroTelefono.isPresent()) {
-            return Optional.empty();
+        //validamos que el sueldo base no sea negativo
+        if(empleadoNuevo.getSueldoBase() <= 0){
+            throw new IllegalArgumentException("El sueldo base no puede estar en negativo");
         }
-        repository.save(empleado);
-        return Optional.of(empleado);
-
+        
+        //si el estado no es activo por el ! y el estado no es inactivo cae el mensaje de error 
+        if(!"Activo".equals(empleadoNuevo.getEstado()) && !"Inactivo".equals(empleadoNuevo.getEstado())){
+            throw new IllegalArgumentException("El estado del empleado es Activo/Inactivo");
+        }
+        if("Activo".equals(empleadoNuevo.getEstado()) && empleadoNuevo.getFechaDeBaja() != null){
+            throw new IllegalArgumentException("EL empleado activo no puede tener fecha de baja debe estar vacia o null");
+        }
+        if("Inactivo".equals(empleadoNuevo.getEstado()) && empleadoNuevo.getFechaDeBaja() == null){
+            throw new IllegalArgumentException("El empleado inactivo debe tener una fecha de baja");
+        }
+        return repository.save(empleadoNuevo);
     }
 
     // Metodo put actualizar por id
@@ -91,11 +99,12 @@ public class EmpleadoService {
         empleado.setNumeroTelefono(empleadoNuevo.getNumeroTelefono());
         empleado.setDireccion(empleadoNuevo.getDireccion());
         empleado.setEstadoCivil(empleadoNuevo.getEstadoCivil());
-        empleado.setFechaIngreso(empleadoNuevo.getFechaIngreso());
-        empleado.setFechaSalida(empleadoNuevo.getFechaSalida());
+        empleado.setFechaContrato(empleadoNuevo.getFechaContrato());
+        empleado.setFechaDeBaja(empleadoNuevo.getFechaDeBaja());
         empleado.setCargo(empleadoNuevo.getCargo());
         empleado.setEstado(empleadoNuevo.getEstado());
         empleado.setSueldoBase(empleadoNuevo.getSueldoBase());
+        empleado.setAfp(empleadoNuevo.getAfp());
 
         repository.save(empleado);
         return Optional.of(empleado);

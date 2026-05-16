@@ -61,14 +61,24 @@ public class manejosErorres {
 
                 ErrorDTO errorDTO = new ErrorDTO(
                     LocalDateTime.now(),
-                    404, // El codigo de error No encontrado
+                    404, // El codigo de error datos no encontados
                     ex.getMessage(), // el mensaje de error que lanzara
                     null, // no hay errores de validacion, por eso es null
                     request.getRequestURI());
-                    
-                    return ResponseEntity.badRequest().body(errorDTO);
-            }        
+                    return ResponseEntity.status(404).body(errorDTO);
+            }
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<ErrorDTO> manejarArgumentosInvalidos(
+            IllegalArgumentException ex,
+            HttpServletRequest request){
+
+                ErrorDTO errorDTO = new ErrorDTO(
+                    LocalDateTime.now(),
+                    400, // El error 400 cliente envia datos invalidos
+                    ex.getMessage(),
+                    null,
+                    request.getRequestURI());
+                return ResponseEntity.status(400).body(errorDTO);
+        }
 }
-
-
 

@@ -71,23 +71,8 @@ public class EmpleadoController {
      */
     @PostMapping("/crear")
     public ResponseEntity<?> crearEmpleados(@Valid @RequestBody Empleado empleado, BindingResult resultado) {
-
-        if (resultado.hasErrors()) {
-            Map<String, String> error = new HashMap<>();
-            resultado.getFieldErrors().forEach(errores -> error.put(errores.getField(), errores.getDefaultMessage()));
-            return ResponseEntity.badRequest().body(error);
-        }
-        try {
-            Optional<Empleado> existe = service.crearEmpleado(empleado);
-            if (existe.isEmpty()) {
-                return ResponseEntity.status(400).body("Datos unicos ya existen");
-            }
-            return ResponseEntity.status(201).body("Empleado registrado con exito");
-
-        } catch (Exception error) {
-            return ResponseEntity.status(500).body("Error de la base de datos");
-
-        }
+        Empleado empleadoNuevo = service.crearEmpleado(empleado);
+        return ResponseEntity.status(201).body(empleadoNuevo);
     }
 
     @PutMapping("/actualizar/{id}")
