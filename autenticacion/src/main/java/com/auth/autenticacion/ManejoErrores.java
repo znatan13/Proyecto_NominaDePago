@@ -40,7 +40,7 @@ public class ManejoErrores {
         // Este metodo se usara en post y put mostrara que fue el error y donde
         ErrorDTO errorDTO = new ErrorDTO(
                 LocalDateTime.now(),
-                400,
+                400, 
                 "Error de validacion",
                 errores, // Detalle de error del campo
                 request.getRequestURI()); // Url donde ocurrio el error
@@ -56,7 +56,7 @@ public class ManejoErrores {
 
         ErrorDTO errorDTO = new ErrorDTO(
                 LocalDateTime.now(),
-                400,
+                400, // error de validacion de datos
                 "Email ya existe o nombre de usuario, vuelva intentarlo",
                 null,
                 request.getRequestURI());
@@ -81,6 +81,22 @@ public class ManejoErrores {
                 ex.getMessage(), //Se mostraran los mensajes respondiente al caso
                 null,
                 request.getRequestURI());
-        return ResponseEntity.badRequest().body(errorDTO);
+        // 404 -> recurso no encotrado
+        return ResponseEntity.status(404).body(errorDTO);
     }
+
+    //Manejara los errores de datos erroneos
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDTO> manejarErroresDatosErroneos(
+            IllegalArgumentException ex,
+            HttpServletRequest request){
+
+            ErrorDTO errorDTO = new ErrorDTO(
+                LocalDateTime.now(),
+                400, // 400 -> Error ejemplo id nulo o email nulo
+                ex.getMessage(),
+                null,
+                request.getRequestURI());
+            return ResponseEntity.status(400).body(errorDTO);
+        }
 }

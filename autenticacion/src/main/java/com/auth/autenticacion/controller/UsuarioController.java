@@ -1,9 +1,9 @@
 package com.auth.autenticacion.controller;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth.autenticacion.dto.BuscarDatosSegurosDTO;
 import com.auth.autenticacion.dto.LoginDTO;
 import com.auth.autenticacion.dto.LoginSeguroDTO;
-import com.auth.autenticacion.dto.UsuarioSeguroDTO;
+
 import com.auth.autenticacion.model.Usuario;
 import com.auth.autenticacion.service.UsuarioService;
 
@@ -26,9 +26,12 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
-    @Autowired
+    
+    private final UsuarioService service;
 
-    private UsuarioService service;
+    public UsuarioController(UsuarioService service){
+        this.service = service;
+    }
 
     // Get listar todo
     @GetMapping()
@@ -44,25 +47,15 @@ public class UsuarioController {
     
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarId(@PathVariable Integer id){
-        UsuarioSeguroDTO buscar = service.buscarIdDTO(id);
+        BuscarDatosSegurosDTO buscar = service.buscarIdDTO(id);
         return ResponseEntity.ok(buscar);
     }
 
     // Get buscar email del usuario con DTO para proteger los datos sensibles
-    @GetMapping("/buscar")
+    @GetMapping("/buscar/{email}")
     public ResponseEntity<?> buscarEmail(@PathVariable String email) {
-        try {
-            Optional<BuscarDatosSegurosDTO> existe = service.buscarEmailDTO(email);
-
-            if (existe.isEmpty()) {
-                return ResponseEntity.status(404).body("El email no existe");
-            }
-            return ResponseEntity.ok(existe.get()); // devuelve el objeto Usuario en este caso el Email
-
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error del sistema");
-
-        }
+        BuscarDatosSegurosDTO existe = service.buscarEmailDTO(email);
+        return ResponseEntity.status(200).body(existe);
     }
 
     // metodo post crear una cuenta de usuario.
@@ -77,8 +70,8 @@ public class UsuarioController {
     // Login seguro para no mostrar datos sensibles y LoginDTO para que solo ingrese
     // nombre y password
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
-        Optional<LoginSeguroDTO> login = service.loginSeguro(loginDTO.getNombreUsuario(), loginDTO.getPassword());
-        return ResponseEntity.ok(login.get());
+        LoginSeguroDTO login = service.loginSeguro(loginDTO.getNombreUsuario(), loginDTO.getPassword());
+        return ResponseEntity.ok(login);
     }
 
     // Metodo Put: Actualizar por id
@@ -90,8 +83,10 @@ public class UsuarioController {
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<?> eliminarUsuarios(@PathVariable Integer id) {
-            boolean existe = service.eliminar(id);
-            return ResponseEntity.status(200).body(existe);
+            service.eliminar(id);
+            return ResponseEntity.status(200).body("Usuario eliminado");
     }
-
 }
+    
+
+

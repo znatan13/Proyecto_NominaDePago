@@ -6,7 +6,7 @@ import java.util.Optional;
 
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,59 +19,38 @@ import com.auth.autenticacion.repository.UsuarioRepository;
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository repository;
+    private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    //contrustor para inyectar dependencias y no usar autowired
+    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
     /*
      * Metodo (get) listar todas las cuentas de usuarios,
      * si el administrador lo requiere, puede retornar en el historial
      */
     public List<Usuario> listar() {
         return repository.findAll();
-    }
-
-    // Get : buscar si existe email 
-    public Optional<Usuario> buscarEmail(String email) {
-
-        // Valida que no sea null, que no este en vacio ni que contenga espacios
-        if (email == null || email.isBlank()) {
-            return Optional.empty();
-        }
-        return repository.findByEmail(email);
-    }
-
-    // Get buscar por id
-    public Usuario buscarPorId(Integer id) {
-        Optional<Usuario> existeId = repository.findById(id);
-        if (existeId.isPresent()) {
-           return existeId.get();
-            // si el Id null, retornara un mensaje de excepcion
-        }
-        throw new RuntimeException("El id no existe");
-    }
-
+    } 
+    
     // Post: Metodo crear cuenta usuario
     public Usuario crear(Usuario usuario) {
 
-        /*
-         * Evito controlar duplicados, para que actue la validacion de la base de datos
-         */
-        // Validamos que los datos ingresados no sea null y que no tenga espacios.
         if (usuario == null) {
-            return null;
+            throw new IllegalArgumentException("El usuario no puede ser nulo o vacio");
         }
         if (usuario.getNombreUsuario() == null || usuario.getNombreUsuario().isBlank()) {
-            return null;
+            throw new IllegalArgumentException("El nombre de usuario no puede ser nulo o vacio");
         }
         if (usuario.getEmail() == null || usuario.getEmail().isBlank()) {
-            return null;
+            throw new IllegalArgumentException("El email no puede ser nulo o vacio");
         }
         if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
-            return null;
+            throw new IllegalArgumentException("La contraseña no puede ser nula o vacia");
         }
+        //encriptamos la contraseña y que sea segura
         String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
         usuario.setPassword(passwordEncriptada);
         return repository.save(usuario);
@@ -86,6 +65,7 @@ public class UsuarioService {
         }
 
         Usuario usuarios = existe.get();
+        //encriptamos la contraseña para actualizarla
         String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
         
         usuarios.setNombreUsuario(usuario.getNombreUsuario());
@@ -96,17 +76,15 @@ public class UsuarioService {
     }
 
     // Delete: Metodo eliminar usuario
-    public boolean eliminar(Integer id) {
+    public void eliminar(Integer id) {
         if (id == null) {
-            throw new RuntimeException("El id que busca para eliminar no existe"); 
-            //si el id llega ser nulo, retorna un mensaje de exception
+            throw new IllegalArgumentException("El id no puede ser nulo");
         }
-        if (repository.existsById(id)) { // pregunta ¿existe el id? si existe lo elimina
-            repository.deleteById(id);
-            return true; // deleteBtId -> es un void
+        Optional<Usuario> existe = repository.findById(id);
+        if (existe.isEmpty()) {
+            throw new RuntimeException("El id que desea eliminar no existe");
         }
-        throw new RuntimeException("El id que busca para eliminar no existe");
-        // si el id no existe, retornara un mensaje de excepcion
+        repository.deleteById(id);
     }
 
     // -------------------- DTO uso exclusivos --------------------------------
@@ -129,29 +107,30 @@ public class UsuarioService {
     }
 
     // DTO login seguro se evita filtrar la contraseña.
-    public Optional<LoginSeguroDTO> loginSeguro(String nombreUsuario, String password) {
+    public LoginSeguroDTO loginSeguro(String nombreUsuario, String password) {
 
         if (nombreUsuario == null || nombreUsuario.isBlank() || password == null || password.isBlank()) {
-            return Optional.empty();
+            throw new IllegalArgumentException("El nombre de usuario o la contraseña no pueden ser nulos o vacios");
         }
 
         Optional<Usuario> usuarioEncontrado = repository.findByNombreUsuario(nombreUsuario);
         LoginSeguroDTO dto = new LoginSeguroDTO();
         // Antes de llamar el usuario con todo sus atributos verificamos que venga vacio
         if (usuarioEncontrado.isEmpty()) {
-            return Optional.empty();
+            throw new RuntimeException("Credenciales incorrectas, vuelva intentarlo");
         }
         Usuario usuario = usuarioEncontrado.get();
 
-        if (password.equals(usuario.getPassword())) {
+        // se compara la contraseña ingresada con la encriptada 
+        if (passwordEncoder.matches(password, usuario.getPassword())) {
             dto.setNombreUsuario(usuario.getNombreUsuario());
             dto.setEmail(usuario.getEmail());
             dto.setRol(usuario.getRol());
 
-            return Optional.of(dto); // dice si sale todo ok? entra al return
+            return dto; // dice si sale todo ok? entra al return
 
         }
-        return Optional.empty(); // si no retornara vacio.
+        throw new RuntimeException("Credenciales incorrectas, vuelva intentarlo");
     }
 
     /*
@@ -173,41 +152,30 @@ public class UsuarioService {
          * logica
          */
     // DTO para buscar email.
-    public Optional<BuscarDatosSegurosDTO> buscarEmailDTO(String email) {
+    public BuscarDatosSegurosDTO buscarEmailDTO(String email) {
 
         if (email == null || email.isBlank()) {
-            return Optional.empty();
+            throw new IllegalArgumentException("El email no puede ser nulo o vaco");
         }
         Optional<Usuario> users = repository.findByEmail(email);
 
         if (users.isEmpty()) {
-            return Optional.empty();
+            throw new RuntimeException("El email registrado no existe");
         }
 
-        return Optional.of(buscarDatos(users.get()));
+        return buscarDatos(users.get());
     }
-
-    // DTO para buscar id.
-    // al utilizar DTO para buscar id, evitamos mostrar datos sensibles 
-    public UsuarioSeguroDTO buscarIdDTO(Integer id) {
+    //DTO para buscar por id
+    public BuscarDatosSegurosDTO buscarIdDTO(Integer id) {
 
         if (id == null) {
-            throw new RuntimeException("El id no existe");
+            throw new IllegalArgumentException("El id no puede ser nulo");
         }
         Optional<Usuario> users = repository.findById(id);
 
         if(users.isEmpty()){
             throw new RuntimeException("El id no existe");
         }
-
-        Usuario usuario = users.get();
-        UsuarioSeguroDTO dto = new UsuarioSeguroDTO();
-        dto.setNombreUsuario(usuario.getNombreUsuario());
-        dto.setEmail(usuario.getEmail());
-
-        return dto;
-
+        return buscarDatos(users.get());
     }
-
-
 }
