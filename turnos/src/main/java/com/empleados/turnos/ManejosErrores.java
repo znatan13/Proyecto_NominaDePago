@@ -54,7 +54,7 @@ public class ManejosErrores {
         ErrorDTO errorDTO = new ErrorDTO(
                 LocalDateTime.now(),
                 400,
-                "Faltan datos obligatorios o el id es invalido",
+                "Error de integridad de datos, intentelo nuevamente",
                 null,
                 request.getRequestURI());
         return ResponseEntity.badRequest().body(errorDTO);
@@ -68,10 +68,23 @@ public class ManejosErrores {
             //Creamo el JSON con el error de get y delete
             ErrorDTO errorDTO = new ErrorDTO(
                 LocalDateTime.now(),
-                400,
+                404,
                 ex.getMessage(),
                 null,
                 request.getRequestURI());
-            return ResponseEntity.badRequest().body(errorDTO);
+            return ResponseEntity.status(404).body(errorDTO);
          }
+     @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<ErrorDTO> manejarArgumentosInvalidos(
+            IllegalArgumentException ex,
+            HttpServletRequest request){
+
+                ErrorDTO errorDTO = new ErrorDTO(
+                    LocalDateTime.now(),
+                    400, // error del cliente 
+                    ex.getMessage(),
+                    null,
+                    request.getRequestURI());
+                return ResponseEntity.status(400).body(errorDTO);
+        }
 }

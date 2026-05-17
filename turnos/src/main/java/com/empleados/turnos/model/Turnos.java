@@ -1,12 +1,17 @@
 package com.empleados.turnos.model;
 
+import java.time.LocalDate;
+
+
 import jakarta.persistence.Column;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,23 +31,26 @@ public class Turnos {
 
     @Positive(message = "El id del empleado debe ser mayor a 0")
     @Column(nullable = false)
+    //este id lo usaremos para relacionar turno con emopleado
     private Integer empleadoId;
-    // no es unico porque el mismo empleado puede tener muchos turnos
 
-    @NotBlank(message = "La fecha no puede estar vacia")
+    @NotNull(message = "La fecha del turno no puede ser nula")
     @Column(nullable = false, length = 15)
-    private String fecha;
+    //LocalDate nos permite manejar fechas sin horas
+    private LocalDate fecha;
 
     @NotBlank(message = "La hora de inicio del empleado no puede estar vacia")
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 5)
+    //LocalTime muestra solo la hora sin fecha
     private String horaInicio;
 
     @NotBlank(message = "La hora de fin del empleado no puede estar vacia")
-    @Column(nullable = false, length = 15)
+    @Column(nullable = false, length = 5)
     private String horaFin;
 
     @NotBlank(message = "El estado del empleado no puede estar vacio: elija activo/inactivo")
     @Column(nullable = false, length = 20)
     private String estado;
+
 
 }

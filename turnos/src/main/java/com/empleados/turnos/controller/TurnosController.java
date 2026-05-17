@@ -1,7 +1,7 @@
 package com.empleados.turnos.controller;
 
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,17 +39,14 @@ public class TurnosController {
 
     @GetMapping("/buscar/empleadoid/{empleadoId}")
     public ResponseEntity<?> buscarIdEmpleado(@PathVariable Integer empleadoId) {
-        Optional<Turnos> buscar = service.buscarIdEmpleado(empleadoId);
-        if (buscar.isEmpty()) {
-            return ResponseEntity.status(404).body("EL turno del Empleado no existe");
-        }
-        return ResponseEntity.ok(buscar.get());
+        List<Turnos> buscar = service.buscarIdEmpleado(empleadoId);
+        return ResponseEntity.ok().body(buscar);
     }
 
     @PostMapping("/crear")
     public ResponseEntity<?> crearTurno(@Valid @RequestBody Turnos turnos) {
-        Optional<Turnos> nuevo = service.crearTurno(turnos);
-        return ResponseEntity.status(201).body(nuevo.get());
+        Turnos crear = service.crearTurno(turnos);
+        return ResponseEntity.status(201).body(crear);
     }
 
     @PutMapping("/actualizar/{turnoId}")
@@ -60,7 +57,7 @@ public class TurnosController {
 
     @DeleteMapping("/eliminar/{turnoId}")
     public ResponseEntity<?> eliminar(@PathVariable Integer turnoId) {
-        boolean eliminar = service.eliminarPorId(turnoId);
-        return ResponseEntity.status(200).body(eliminar);
+       service.eliminarPorId(turnoId);
+       return ResponseEntity.ok().body("El turno con id" + turnoId + "Fue eliminado");
     }
 }
