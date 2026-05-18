@@ -1,6 +1,7 @@
 package com.empleados.turnos.service;
 
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.empleados.turnos.dto.EmpleadoSimple;
 import com.empleados.turnos.model.Empleado;
 import com.empleados.turnos.model.Turnos;
 import com.empleados.turnos.repository.TurnoRepository;
@@ -123,7 +125,7 @@ public class TurnosService {
 
     //Metodo para unir turnos con empleados solo por el id
     //hacemos una relacion un empleado puede tener muchos turnos.
-    public Empleado obtenerTurnosConEmpleados(Integer empleadoId){
+    public EmpleadoSimple obtenerTurnosConEmpleados(Integer empleadoId){
 
        if(empleadoId == null || empleadoId <= 0){
             throw new IllegalArgumentException("El id no debe ser nulo y debe ser mayor a 0");
@@ -133,7 +135,18 @@ public class TurnosService {
 
        String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
        Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+       if(empleado == null){
+            throw new RuntimeException("El id del empleado no existe");
+       }
 
-       return empleado;
+       List<Turnos> listarTurnosEmpleado = repository.findByEmpleadoId(empleadoId);
+       EmpleadoSimple empleadoSimple = new EmpleadoSimple();
+       empleadoSimple.setNombre(empleado.getNombre());
+       empleadoSimple.setApellido(empleado.getApellido());
+       empleadoSimple.setCargo(empleado.getCargo());
+
+       empleadoSimple.setTurnos(listarTurnosEmpleado);
+
+       return empleadoSimple;
     }
 }

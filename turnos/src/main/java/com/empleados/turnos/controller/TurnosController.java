@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.empleados.turnos.dto.EmpleadoSimple;
 import com.empleados.turnos.model.Empleado;
 import com.empleados.turnos.model.Turnos;
 import com.empleados.turnos.service.TurnosService;
 
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -45,10 +46,10 @@ public class TurnosController {
         List<Turnos> buscar = service.buscarIdEmpleado(empleadoId);
         return ResponseEntity.ok().body(buscar);
     }
-
+    // este metodo se traera los datos del empleado del microservicio historial
     @GetMapping("/empleado/{empleadoId}")
     public ResponseEntity<?> empleadoId(@PathVariable Integer empleadoId) {
-        Empleado empleado = service.obtenerTurnosConEmpleados(empleadoId);
+        EmpleadoSimple empleado = service.obtenerTurnosConEmpleados(empleadoId);
         return ResponseEntity.ok().body(empleado);
     }
     
