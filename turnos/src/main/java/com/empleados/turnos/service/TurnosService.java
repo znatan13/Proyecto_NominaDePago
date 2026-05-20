@@ -135,6 +135,7 @@ public class TurnosService {
 
        String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
        Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+       
        if(empleado == null){
             throw new RuntimeException("El id del empleado no existe");
        }
