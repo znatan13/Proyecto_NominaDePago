@@ -43,6 +43,7 @@ public class AsistenciaService {
         if(asistencia.getEmpleadoId() == null || asistencia.getEmpleadoId() <= 0){
             throw new IllegalArgumentException("El id del empleado deber mayor a 0");
         }
+        
         if(asistencia.getObservaciones() != null && asistencia.getObservaciones().length() > 200){
             throw new IllegalArgumentException("El mensaje para el empleado debe ser menor a 200 caracteres");
         }
@@ -62,7 +63,7 @@ public class AsistenciaService {
         }
         Optional<Asistencia> buscarAsistencia = repository.findById(id);
         if(buscarAsistencia.isEmpty()){
-            throw new RuntimeException("La asistencia con id: " + id +  "no existe");
+            throw new RuntimeException("La asistencia con id: " + id +  " no existe");
         }
         return buscarAsistencia.get();
     }
@@ -85,7 +86,7 @@ public class AsistenciaService {
 
             return repository.save(asistencia);
         }
-        throw new RuntimeException("No se pudo actualizar ese id " + id + "de asistencia intente de nuevo");
+        throw new RuntimeException("No se pudo actualizar ese id " + id + " de asistencia intente de nuevo");
     }
     //metodo eliminar una asistencia (no muy recomendable)
     public void eliminarRegistro(Integer id){
@@ -117,7 +118,7 @@ public class AsistenciaService {
         String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
         Empleado empleado = restTemplate.getForObject(url, Empleado.class);
         if(empleado == null){
-            throw new RuntimeException("El empleado no tiene registro u no existe ");
+            throw new RuntimeException("El empleado no tiene registro u no existe");
         }
 
         //Buscamos el turno al igual que empleado
