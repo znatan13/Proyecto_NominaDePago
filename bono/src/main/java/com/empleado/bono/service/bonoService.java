@@ -1,39 +1,148 @@
 package com.empleado.bono.service;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.empleado.bono.dto.BonosEmpleado;
 import com.empleado.bono.model.Bono;
-import com.empleado.bono.repository.BonoRepository;
+import com.empleado.bono.model.Empleado;
+import com.empleado.bono.repository.bonoRepository;
 
 @Service
-public class BonoService {
+public class bonoService {
 
-    @Autowired
-    private BonoRepository bonoRepository;
+    private bonoRepository repository;
 
-    public List<Bono> listar() {
-        return bonoRepository.findAll();
+    public bonoService(bonoRepository repository){
+        this.repository = repository;
     }
 
-    public Bono guardar(Bono bono) {
-        return bonoRepository.save(bono);
+  
+    public List<Bono> listarBonos(){
+        return repository.findAll();
     }
 
-    public Bono buscar(Integer id) {
-        return bonoRepository.findById(id).orElseThrow(() -> new RuntimeException("Bono no encontrado"));
+    //metodo buscar un bono por id
+    public Bono buscarBono (Integer bonoId){
+        if(bonoId == null){
+            throw new IllegalArgumentException("El id de bono no debe ser nulo");
+        }
+        Optional<Bono> buscar = repository.findById(bonoId);
+        if(buscar.isEmpty()){
+            throw new RuntimeException("El id :" + bonoId + " que busca no existe");
+        }
+        return buscar.get();
     }
 
-    public Bono actualizar(Integer id, Bono nuevoBono) {
+     public List<Bono> buscarIdEmpleado(Integer empleadoId){
+        if(empleadoId == null || empleadoId <= 0){
+            throw new IllegalArgumentException("El id del empleado no debe ser nulo y debe ser mayor a 0");
+        }
+        List<Bono> buscarIdEmpleado = repository.findByEmpleadoId(empleadoId);
+        if(buscarIdEmpleado.isEmpty()){
+            throw new RuntimeException("El id : " + empleadoId + "no existe");
+        }
+        return buscarIdEmpleado;
+    }
+    //metodo reautilizable en crear un bono y actualizar para evitar doble logica
+    public void validarBono(Bono bono){
 
-        Bono bono = buscar(id);
+        if(bono == null){
+            throw new IllegalArgumentException("El bono no debe ser nulo");
+        }
+        if(bono.getEmpleadoId() == null || bono.getEmpleadoId() <=  0){
+            throw new IllegalArgumentException("El id del empleado debe ser mayor a 0");
+        }
+        if(bono.getBonoEmpleado() > 1000000000){
+            throw new IllegalArgumentException("El bono de empleado debe ser de un monto coherente");
+        }
+        if(bono.getBonoEmpleado() <= 0){
+            throw new IllegalArgumentException("El bono de empleado debe ser positivo");
+        }
+        if(bono.getDescripcion() != null && bono.getDescripcion().length() > 250){
+            throw new IllegalArgumentException("La descripcion debe ser menor de 250 caracteres");
+        }
+        if(bono.getNombreBono() != null && bono.getNombreBono().length() > 100){
+            throw new IllegalArgumentException("El nombre del bono debe ser menor a 100 caracteres");
+        }
+        if(bono.getPorcentajeBono() <= 0){
+            throw new IllegalArgumentException("El porcentaje de bono debe ser mayor de 0");
+        }
+        if (bono.getPorcentajeBono() > 100) {
+            throw new IllegalArgumentException("El bono no debe superar el 100%");
+        }
+        if(bono.getFechaEntrega() == null){
+            throw new IllegalArgumentException("La fecha de entrega del bono no debe ser nula");
+        }
+    }
+    //metodo crear un bono
+    public Bono crearBono (Bono bonoNuevo){
+        validarBono(bonoNuevo); // metodo reautilizable
+        return repository.save(bonoNuevo);
+    }
 
-        bono.setTipoBono(nuevoBono.getTipoBono());
-        bono.setBonoEmpleado(nuevoBono.getBonoEmpleado());
+    //metodo actualizar un bono
+    public Bono actualizarBono (Integer bonoId, Bono bonoActualizado){
 
-        return bonoRepository.save(bono);
+        if(bonoId == null || bonoId <= 0){
+            throw new IllegalArgumentException("El bono no debe ser nulo y debe ser mayor a 0");
+        }
+        Optional<Bono> existe = repository.findById(bonoId);
+        if(existe.isEmpty()){
+            throw new RuntimeException("El bono no existe id: " + bonoId);
+        }
+        validarBono(bonoActualizado);
+        Bono bono = existe.get();
+        bono.setEmpleadoId(bonoActualizado.getEmpleadoId());
+        bono.setNombreBono(bonoActualizado.getNombreBono());
+        bono.setFechaEntrega(bonoActualizado.getFechaEntrega());
+        bono.setBonoEmpleado(bonoActualizado.getBonoEmpleado());
+        bono.setPorcentajeBono(bonoActualizado.getPorcentajeBono());
+        bono.setDescripcion(bonoActualizado.getDescripcion());
+
+        return repository.save(bono);
+    }
+
+    //metodo eliminar un bono
+    public void eliminarBono (Integer bonoId){
+        if(bonoId == null){
+            throw new IllegalArgumentException("El Id Bono no puede venir nulo");
+        }
+        if(repository.existsById(bonoId)){
+            repository.deleteById(bonoId);
+        }else{
+            throw new RuntimeException("El bono con id: " + bonoId + " no existe");
+        }
+    }
+
+    public BonosEmpleado bonosEmpleado (Integer empleadoId){
+        if(empleadoId == null || empleadoId <= 0){
+            throw new IllegalArgumentException("El id de empleado no debe ser nulo y debe ser mayor a 0");
+        }
+        RestTemplate restTemplate = new RestTemplate();
+
+        String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
+        Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+
+        if(empleado == null){
+            throw new RuntimeException("El empleado no existe");
+        }
+        List<Bono> bonos = repository.findByEmpleadoId(empleadoId);
+        if(bonos.isEmpty()){
+            throw new RuntimeException("El empleado no tiene bonos registrados");
+        }
+        BonosEmpleado bonosEmpleado = new BonosEmpleado();
+        bonosEmpleado.setNombre(empleado.getNombre()); 
+        bonosEmpleado.setApellido(empleado.getApellido());
+        bonosEmpleado.setRut(empleado.getRut());
+        bonosEmpleado.setCargo(empleado.getCargo());
+
+        bonosEmpleado.setBono(bonos);
+
+        return bonosEmpleado;
     }
 
 }

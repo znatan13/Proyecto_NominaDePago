@@ -62,7 +62,7 @@ public class AsistenciaController {
         return ResponseEntity.ok().body("El registro : " + id + " ha sido eliminado");
     }
 
-    @GetMapping("/registro/empleado{empleadoId}/turno/{turnoId}")
+    @GetMapping("/registro/empleado/{empleadoId}/turno/{turnoId}")
     public ResponseEntity<?> registroCompleto(@PathVariable Integer empleadoId, @PathVariable Integer turnoId) {
         AsistenciaCompletaDTO registroCompleto = service.obtenerAsistenciaCompleta(empleadoId, turnoId);
         return ResponseEntity.ok().body(registroCompleto);

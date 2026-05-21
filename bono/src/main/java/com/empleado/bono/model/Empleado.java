@@ -1,13 +1,13 @@
-package main.java.com.empleado.bono.model;
+package com.empleado.bono.model;
+
+import lombok.Data;
 
 @Data
 public class Empleado {
 
-    private Integer empleadoid;
     private String nombre;
-    private String email;
+    private String apellido;
+    private String rut;
     private String cargo;
-    private String estado;
-    private double sueldoBase;
 
 }
