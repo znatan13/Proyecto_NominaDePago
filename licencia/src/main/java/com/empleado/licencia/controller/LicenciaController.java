@@ -52,4 +52,9 @@ public class LicenciaController {
         return "Licencia eliminada";
     }
 
+    @GetMapping("/vencidas")
+    public List<Licencia> obtenerVencida() {
+        return licenciaService.buscarVencidas();
+    }
+
 }
