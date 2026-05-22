@@ -46,21 +46,21 @@ public class BonoController {
         return ResponseEntity.ok().body(bonoActualizar);
     }
     //metodo buscar bono por su id
-    @GetMapping("/buscar/{bonoId}")
+    @GetMapping("/buscar/bono/{bonoId}")
     public ResponseEntity<?> buscarBono (@PathVariable Integer bonoId) {
         Bono buscar = service.buscarBono(bonoId);
         return ResponseEntity.ok().body(buscar);
     }
     //metodo buscar un empleado por id y mostrar bono (solo id)
-    @GetMapping("/buscar/{empleadoId}")    
-    public ResponseEntity<?> buscarEmpleadoId(@PathVariable Integer bonoId){
-        List<Bono> buscar = service.buscarIdEmpleado(bonoId);
+    @GetMapping("/buscar/empleado/{empleadoId}")    
+    public ResponseEntity<?> buscarEmpleadoId(@PathVariable Integer empleadoId){
+        List<Bono> buscar = service.buscarIdEmpleado(empleadoId);
         return ResponseEntity.ok().body(buscar);
     }
     //metodo buscar los bonos con empleados asociados a tal bono
-    @GetMapping("/bonos/empleados/{bonoId}")
-    public ResponseEntity<?> bonosEmpleado (@PathVariable Integer bonoId) {
-        BonosEmpleado bonosEmpleado = service.bonosEmpleado(bonoId);
+    @GetMapping("/empleados/{empleadoId}")
+    public ResponseEntity<?> bonosEmpleado (@PathVariable Integer empleadoId) {
+        BonosEmpleado bonosEmpleado = service.bonosEmpleado(empleadoId);
         return ResponseEntity.ok().body(bonosEmpleado);
     }
     @DeleteMapping("/eliminar/{bonoId}")
