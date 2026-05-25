@@ -117,7 +117,7 @@ public class bonoService {
             throw new RuntimeException("El bono con id: " + bonoId + " no existe");
         }
     }
-
+    //Metodo para conectar microservicios
     public BonosEmpleado bonosEmpleado (Integer empleadoId){
         if(empleadoId == null || empleadoId <= 0){
             throw new IllegalArgumentException("El id de empleado no debe ser nulo y debe ser mayor a 0");
@@ -135,6 +135,7 @@ public class bonoService {
             throw new RuntimeException("El empleado no tiene bonos registrados");
         }
         BonosEmpleado bonosEmpleado = new BonosEmpleado();
+        
         bonosEmpleado.setNombre(empleado.getNombre()); 
         bonosEmpleado.setApellido(empleado.getApellido());
         bonosEmpleado.setRut(empleado.getRut());

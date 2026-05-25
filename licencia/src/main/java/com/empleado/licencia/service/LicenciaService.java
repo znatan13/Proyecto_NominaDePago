@@ -22,6 +22,7 @@ public class LicenciaService {
         return licenciarRespository.findAll();
     }
 
+    //Metodo Guardar licencias con fecha de cracion y vencimiento
     public Licencia guardar(Licencia licencia) {
 
         validarLicencia(licencia);
@@ -34,7 +35,7 @@ public class LicenciaService {
 
         return licenciarRespository.save(licencia);
     }
-
+    //Metodo Buscar licencias por id
     public Licencia buscarLicencia(Integer idLicencia) {
 
         if (idLicencia == null || idLicencia <= 0) {
@@ -47,7 +48,7 @@ public class LicenciaService {
 
         return licencia;
     }
-
+    //Metodo buscar empleado por id
     public List<Licencia> buscarIdEmpleado(Integer empleadoId) {
 
         if(empleadoId == null || empleadoId <= 0) {
@@ -62,7 +63,7 @@ public class LicenciaService {
 
         return licencias;
     }
-
+    //Actulizar licencias
     public void actualizarEstadoLicencia(Licencia licencia) {
 
         if (LocalDate.now().isAfter(licencia.getFechaVencimiento()));
@@ -71,7 +72,7 @@ public class LicenciaService {
 
         licenciarRespository.save(licencia);
     }
-
+    //Validacion de licencias
     public void validarLicencia(Licencia licencia) {
 
         if (licencia == null) {
@@ -82,14 +83,14 @@ public class LicenciaService {
             throw new IllegalArgumentException("El id empleado debe ser mayor a 0");
         }
     }
-
+    //Eliminar licencias
     public void eliminar(Integer idLicencia) {
         Licencia licencia = buscarLicencia(idLicencia);
 
         licenciarRespository.delete(licencia);
     }
 
-    // metodo para conectar microservicios
+    //Metodo para conectar microservicios
     public LicenciaEmpleado licenciaEmpleado(Integer empleadoId){
         if(empleadoId == null || empleadoId <= 0){
             throw new IllegalArgumentException("El id del empleado no debe ser nulo y debe ser mayor a 0");         
@@ -104,6 +105,7 @@ public class LicenciaService {
         List<Licencia> listarLicenciaEmpleados = licenciarRespository.findByEmpleadoid(empleadoId);
 
         LicenciaEmpleado licenciaEmpleado = new LicenciaEmpleado();
+        
         licenciaEmpleado.setNombre(empleado.getNombre());
         licenciaEmpleado.setApellido(empleado.getApellido());
         licenciaEmpleado.setRut(empleado.getRut());
