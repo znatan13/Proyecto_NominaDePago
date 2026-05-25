@@ -5,7 +5,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.empleado.licencia.dto.LicenciaEmpleado;
+import com.empleado.licencia.model.Empleado;
 import com.empleado.licencia.model.Licencia;
 import com.empleado.licencia.repository.LicenciarRespository;
 
@@ -84,5 +87,30 @@ public class LicenciaService {
         Licencia licencia = buscarLicencia(idLicencia);
 
         licenciarRespository.delete(licencia);
+    }
+
+    // metodo para conectar microservicios
+    public LicenciaEmpleado licenciaEmpleado(Integer empleadoId){
+        if(empleadoId == null || empleadoId <= 0){
+            throw new IllegalArgumentException("El id del empleado no debe ser nulo y debe ser mayor a 0");         
+        }
+        RestTemplate restTemplate = new RestTemplate();
+
+        String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
+        Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+        if(empleado == null){
+            throw new RuntimeException("El empleado no existe");
+        }
+        List<Licencia> listarLicenciaEmpleados = licenciarRespository.findByEmpleadoid(empleadoId);
+
+        LicenciaEmpleado licenciaEmpleado = new LicenciaEmpleado();
+        licenciaEmpleado.setNombre(empleado.getNombre());
+        licenciaEmpleado.setApellido(empleado.getApellido());
+        licenciaEmpleado.setRut(empleado.getRut());
+        licenciaEmpleado.setCargo(empleado.getCargo());
+
+        licenciaEmpleado.setLicencia(listarLicenciaEmpleados);
+
+        return licenciaEmpleado;
     }
 }

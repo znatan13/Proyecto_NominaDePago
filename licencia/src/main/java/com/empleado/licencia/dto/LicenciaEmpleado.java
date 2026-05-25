@@ -11,7 +11,6 @@ public class LicenciaEmpleado {
 
     private String nombre;
     private String apellido;
-    private String email;
     private String rut;
     private String cargo;
 
