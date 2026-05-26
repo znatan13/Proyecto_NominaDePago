@@ -2,6 +2,7 @@ package com.empleado.licencia.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,10 @@ import com.empleado.licencia.repository.LicenciarRespository;
 public class LicenciaService {
 
     @Autowired
-    private LicenciarRespository licenciarRespository;
+    private LicenciarRespository repository;
 
-    public List<Licencia> listar() {
-        return licenciarRespository.findAll();
+    public List<Licencia> listarLicencias() {
+        return repository.findAll();
     }
 
     //Metodo Guardar licencias con fecha de cracion y vencimiento
@@ -33,7 +34,7 @@ public class LicenciaService {
 
         licencia.setEstado("Activo");
 
-        return licenciarRespository.save(licencia);
+        return repository.save(licencia);
     }
     //Metodo Buscar licencias por id
     public Licencia buscarLicencia(Integer idLicencia) {
@@ -42,11 +43,16 @@ public class LicenciaService {
             throw new IllegalArgumentException("El id licencia debe ser mayor a 0");
         }
 
-        Licencia licencia = licenciarRespository.findById(idLicencia).orElseThrow(() -> new RuntimeException("La licencia no existe"));
+        Licencia licencia = repository.findById(idLicencia).orElseThrow(() -> new RuntimeException("La licencia no existe"));
 
         actualizarEstadoLicencia(licencia);
 
         return licencia;
+    }
+    //Metodo de crear licencia
+    public Licencia crearLicencia (Licencia licenciaNueva){
+        validarLicencia(licenciaNueva);
+        return repository.save(licenciaNueva);
     }
     //Metodo buscar empleado por id
     public List<Licencia> buscarIdEmpleado(Integer empleadoId) {
@@ -55,7 +61,7 @@ public class LicenciaService {
             throw new IllegalArgumentException("El Id de empleado debe ser mayor a 0");
         }
 
-        List<Licencia> licencias = licenciarRespository.findByEmpleadoid(empleadoId);
+        List<Licencia> licencias = repository.findByEmpleadoid(empleadoId);
 
         if (licencias.isEmpty()) {
             throw new RuntimeException("No existen una licencia para el empleado");
@@ -63,14 +69,35 @@ public class LicenciaService {
 
         return licencias;
     }
-    //Actulizar licencias
+    //Actulizar licencias de Activo a Vencido o viceversa
     public void actualizarEstadoLicencia(Licencia licencia) {
 
         if (LocalDate.now().isAfter(licencia.getFechaVencimiento()));
 
         licencia.setEstado("Vencido");
 
-        licenciarRespository.save(licencia);
+        repository.save(licencia);
+    }
+    //Metodo actualizar una licencia
+    public Licencia actualizarLicencia (Integer idLicencia, Licencia licenciaActualizado) {
+
+        if (idLicencia == null || idLicencia <- 0) {
+            throw new IllegalArgumentException("La licencia no debe ser nulo y debe ser mayor a 0");
+        }
+        Optional<Licencia> existe = repository.findById(idLicencia);
+        if (existe.isEmpty()) {
+            throw new RuntimeException("La licencia no existe id: " + idLicencia);
+        }
+        validarLicencia(licenciaActualizado);
+        Licencia licencia = existe.get();
+
+        licencia.setEmpleadoid(licenciaActualizado.getEmpleadoid());
+        licencia.setIdLicencia(licenciaActualizado.getIdLicencia());
+        licencia.setFechaCreacion(licenciaActualizado.getFechaCreacion());
+        licencia.setFechaVencimiento(licenciaActualizado.getFechaVencimiento());
+        licencia.setEstado(licenciaActualizado.getEstado());
+
+        return repository.save(licencia);
     }
     //Validacion de licencias
     public void validarLicencia(Licencia licencia) {
@@ -84,10 +111,10 @@ public class LicenciaService {
         }
     }
     //Eliminar licencias
-    public void eliminar(Integer idLicencia) {
+    public void eliminarLicencia(Integer idLicencia) {
         Licencia licencia = buscarLicencia(idLicencia);
 
-        licenciarRespository.delete(licencia);
+        repository.delete(licencia);
     }
 
     //Metodo para conectar microservicios
@@ -102,7 +129,7 @@ public class LicenciaService {
         if(empleado == null){
             throw new RuntimeException("El empleado no existe");
         }
-        List<Licencia> listarLicenciaEmpleados = licenciarRespository.findByEmpleadoid(empleadoId);
+        List<Licencia> listarLicenciaEmpleados = repository.findByEmpleadoid(empleadoId);
 
         LicenciaEmpleado licenciaEmpleado = new LicenciaEmpleado();
         

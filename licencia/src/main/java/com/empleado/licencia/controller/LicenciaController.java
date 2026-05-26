@@ -2,7 +2,8 @@ package com.empleado.licencia.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.empleado.licencia.service.LicenciaService;
 
 import com.empleado.licencia.model.Licencia;
@@ -21,40 +23,47 @@ import jakarta.validation.Valid;
 @RequestMapping("/licencias")
 public class LicenciaController {
 
-    @Autowired
-    private LicenciaService licenciaService;
+    private LicenciaService service;
 
-    @GetMapping("/listar")
-    public List<Licencia> listar() {
-        return licenciaService.listar();
+    public LicenciaController(LicenciaService service){
+        this.service = service;
+    }
+    //Metodo de listar las licencias disponibles
+    @GetMapping()
+    public ResponseEntity<List<Licencia>> listar() {
+        return ResponseEntity.ok().body(service.listarLicencias());
+    }
+    //Metodo de crear licencia
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearLicencia(@Valid @RequestBody Licencia licenciaNueva) {
+        Licencia licenciaCreado = service.crearLicencia(licenciaNueva);
+        return ResponseEntity.status(201).body(licenciaCreado);
     }
 
-    @PostMapping("/guardar")
-    public Licencia guardar(@Valid @RequestBody Licencia licencia) {
-        return licenciaService.guardar(licencia);
+    //metodo de actualizar Licencia
+    @PutMapping("/actualizar/{idLicencia}")
+    public ResponseEntity<?> actualizarLicencia(@PathVariable Integer idLicencia, @RequestBody Licencia licenciaNueva) {
+        Licencia licenciaActualizar = service.actualizarLicencia(idLicencia, licenciaNueva);
+        return ResponseEntity.ok().body(licenciaActualizar);
+    }
+    //Metodo buscar licencia por id
+    @GetMapping("/buscar/licencia/{idLicencia}")
+    public ResponseEntity<?> buscarLicencia(@PathVariable Integer idLicencia) {
+        Licencia buscar = service.buscarLicencia(idLicencia);
+        return ResponseEntity.ok().body(buscar);
+    }
+    //Metodo de buscar el empleado por id y mostrar las licencias
+    @GetMapping("/buscar/empleado/{empleadoId}")    
+    public ResponseEntity<?> buscarEmpleadoId(@PathVariable Integer empleadoId) {
+        List<Licencia> buscar = service.buscarIdEmpleado(empleadoId);
+        return ResponseEntity.ok().body(buscar);
+    }
+    @DeleteMapping("/eliminar/{idLicencia}")
+    public ResponseEntity<?> eliminarLicencia (@PathVariable Integer idLicencia) {
+        service.eliminarLicencia(idLicencia);
+        return ResponseEntity.ok().body("La licencia a sido eliminado");
+
     }
 
-    @GetMapping("/buscar/{id}")
-    public Licencia buscar(@PathVariable Integer id) {
-        return licenciaService.buscar(id);
-    }
-
-    @PutMapping("/actualizar/{id}")
-    public Licencia actualizar(@PathVariable Integer id, @Valid @RequestBody Licencia licencia) {
-        return licenciaService.actualizar(id, licencia);
-    }
-
-    @DeleteMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable Integer id) {
-
-        licenciaService.eliminar(id);
-
-        return "Licencia eliminada";
-    }
-
-    @GetMapping("/vencidas")
-    public List<Licencia> obtenerVencida() {
-        return licenciaService.buscarVencidas();
-    }
 
 }

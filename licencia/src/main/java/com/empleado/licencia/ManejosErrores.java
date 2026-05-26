@@ -22,7 +22,7 @@ public class ManejosErrores {
         HttpServletRequest request) {
             
             Map<String, String> error = new HashMap<>();
-            ex.getBindingResult().getFieldError().forEach(errores -> error.put(errores.getField()
+            ex.getBindingResult().getFieldErrors().forEach(errores -> error.put(errores.getField()
             , errores.getDefaultMessage()));
             
             ErrorDTO errorDTO = new ErrorDTO(
