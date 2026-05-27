@@ -49,11 +49,6 @@ public class LicenciaService {
 
         return licencia;
     }
-    //Metodo de crear licencia
-    public Licencia crearLicencia (Licencia licenciaNueva){
-        validarLicencia(licenciaNueva);
-        return repository.save(licenciaNueva);
-    }
     //Metodo buscar empleado por id
     public List<Licencia> buscarIdEmpleado(Integer empleadoId) {
 
@@ -72,16 +67,15 @@ public class LicenciaService {
     //Actulizar licencias de Activo a Vencido o viceversa
     public void actualizarEstadoLicencia(Licencia licencia) {
 
-        if (LocalDate.now().isAfter(licencia.getFechaVencimiento()));
-
-        licencia.setEstado("Vencido");
-
-        repository.save(licencia);
+        if (LocalDate.now().isAfter(licencia.getFechaVencimiento())){
+            licencia.setEstado("Vencido");
+            repository.save(licencia);
+        }
     }
     //Metodo actualizar una licencia
     public Licencia actualizarLicencia (Integer idLicencia, Licencia licenciaActualizado) {
 
-        if (idLicencia == null || idLicencia <- 0) {
+        if (idLicencia == null || idLicencia <= 0) {
             throw new IllegalArgumentException("La licencia no debe ser nulo y debe ser mayor a 0");
         }
         Optional<Licencia> existe = repository.findById(idLicencia);
@@ -92,10 +86,10 @@ public class LicenciaService {
         Licencia licencia = existe.get();
 
         licencia.setEmpleadoid(licenciaActualizado.getEmpleadoid());
-        licencia.setIdLicencia(licenciaActualizado.getIdLicencia());
         licencia.setFechaCreacion(licenciaActualizado.getFechaCreacion());
         licencia.setFechaVencimiento(licenciaActualizado.getFechaVencimiento());
         licencia.setEstado(licenciaActualizado.getEstado());
+        licencia.setMotivoLicencia(licenciaActualizado.getMotivoLicencia());
 
         return repository.save(licencia);
     }
@@ -109,6 +103,13 @@ public class LicenciaService {
         if (licencia.getEmpleadoid() == null || licencia.getEmpleadoid() <= 0) {
             throw new IllegalArgumentException("El id empleado debe ser mayor a 0");
         }
+        if(licencia.getEstado() != null && licencia.getEstado().length() > 30){
+            throw new IllegalArgumentException("El estado de licencia no puede tener mas de 30 caracteres");
+        }
+
+        if(licencia.getMotivoLicencia() != null && licencia.getMotivoLicencia().length() > 300){
+            throw new IllegalArgumentException("El motivo de licencia no puede superar las 300 caracteres");
+        } 
     }
     //Eliminar licencias
     public void eliminarLicencia(Integer idLicencia) {

@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class Licencia {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer idLicencia;
 
-    @Positive(message= "El id del empleado debe ser major a 0")
+    @Positive(message= "El id del empleado debe ser mayor a 0")
     @Column(nullable = false)
     private Integer empleadoid;
 
@@ -35,7 +36,12 @@ public class Licencia {
     @NotNull(message= "La fecha de vencimiento no de que estar nula")
     private LocalDate fechaVencimiento;
 
-    @NotNull(message= "El estado no debe que estar nulo")
+    @NotBlank(message= "El estado no debe ser obligatorio")
+    @Column(nullable = false, length = 30)
     private String estado;
+
+    @NotBlank(message = "El motivo de la licencia debe ser obligatorio")
+    @Column(nullable = false, length = 300)
+    private String motivoLicencia;
 
 }

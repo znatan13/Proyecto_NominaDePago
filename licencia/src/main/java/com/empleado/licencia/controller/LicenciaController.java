@@ -2,7 +2,6 @@ package com.empleado.licencia.controller;
 
 import java.util.List;
 
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.empleado.licencia.service.LicenciaService;
-
+import com.empleado.licencia.dto.LicenciaEmpleado;
 import com.empleado.licencia.model.Licencia;
 
 import jakarta.validation.Valid;
+
+
 
 @RestController
 @RequestMapping("/licencias")
@@ -36,7 +37,7 @@ public class LicenciaController {
     //Metodo de crear licencia
     @PostMapping("/crear")
     public ResponseEntity<?> crearLicencia(@Valid @RequestBody Licencia licenciaNueva) {
-        Licencia licenciaCreado = service.crearLicencia(licenciaNueva);
+        Licencia licenciaCreado = service.guardar(licenciaNueva);
         return ResponseEntity.status(201).body(licenciaCreado);
     }
 
@@ -58,6 +59,13 @@ public class LicenciaController {
         List<Licencia> buscar = service.buscarIdEmpleado(empleadoId);
         return ResponseEntity.ok().body(buscar);
     }
+
+    @GetMapping("/buscar/empleadoLicencia/{empleadoId}")
+    public ResponseEntity<?> buscarLicenciaEmpleados(@PathVariable Integer empleadoId) {
+        LicenciaEmpleado licenciaEmpleado = service.licenciaEmpleado(empleadoId);
+        return ResponseEntity.ok().body(licenciaEmpleado);
+    }
+    
     @DeleteMapping("/eliminar/{idLicencia}")
     public ResponseEntity<?> eliminarLicencia (@PathVariable Integer idLicencia) {
         service.eliminarLicencia(idLicencia);

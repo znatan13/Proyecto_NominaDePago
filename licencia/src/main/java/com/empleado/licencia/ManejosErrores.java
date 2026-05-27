@@ -63,4 +63,19 @@ public class ManejosErrores {
         return ResponseEntity.status(404).body(errorDTO);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorDTO> manejarErroresValidaciones(
+        IllegalArgumentException ex,
+        HttpServletRequest request
+    ){
+        ErrorDTO errorDTO = new ErrorDTO(
+            LocalDateTime.now(),
+            400,
+            ex.getMessage(),
+            null,
+            request.getRequestURI()
+        );
+        return ResponseEntity.badRequest().body(errorDTO);
+    }
+
 }
