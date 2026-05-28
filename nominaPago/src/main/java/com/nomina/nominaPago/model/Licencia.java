@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class Licencia {
     private int id;
-    private int empleadoid;
+    private int empleadoId;
     private int nombreEmpleado;
     private String tipoLicencia;
     private LocalDate fechaInicio;
