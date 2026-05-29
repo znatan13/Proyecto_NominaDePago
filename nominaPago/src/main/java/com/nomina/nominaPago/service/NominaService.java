@@ -1,12 +1,12 @@
 package com.nomina.nominaPago.service;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.nomina.nominaPago.dto.NominaSimple;
 import com.nomina.nominaPago.model.Bono;
 import com.nomina.nominaPago.model.Empleado;
 import com.nomina.nominaPago.model.Nomina;
@@ -19,22 +19,19 @@ public class NominaService {
     public NominaService(NominaRepository repository){
         this.repository = repository;
     }
-private double sueldoTotal;
-//private double sueldoBase = 540000;
 
 /* busqueda de datos para la nomina */
-public Empleado nomina(Integer nomEmpleadoId){
+public NominaSimple nomina(Integer nomEmpleadoId){
     Optional<Nomina> nominaOp = repository.findById(nomEmpleadoId);
     if(nominaOp.isEmpty()){
         System.out.println("el empleado no existe");
         return null;
     }
-
     Nomina nomina = nominaOp.get();
     RestTemplate restTemplate = new RestTemplate();
 
     Integer empleadoId = nomina.getNomEmpleadoId();
-        String url = ""+empleadoId;
+        String url = "http://localhost:8080/buscar/id/"+empleadoId;
         Empleado empleado = restTemplate.getForObject(url, Empleado.class);
 
         String nombre = empleado.getNombre();
@@ -51,33 +48,55 @@ public Empleado nomina(Integer nomEmpleadoId){
         double sueldoBase = empleado.getSueldoBase();
         String AFP = empleado.getAFP();
 
-        calculoAFP(AFP, sueldoBase);
-        //me canse, son las 6am pero ahora en teoria si le mandas el id (con el url correcto que lo deje vacio) ya hace el calculo del afp perfectamente en base al empleado, ahora me falta hacer la conexion con bono y por ultimo ordenarlo para que parezca una nomina de veritas, pero tengo sueño, goodnight.
-        calculoBono(nomEmpleadoId, empleadoId, AFP, sueldoBase, sueldoBase);
+        double afpCalculada = calculoAFP(AFP, sueldoBase);
+        String url2 = "http://localhost:8080/buscar/empleado/"+empleadoId;
+        Bono bono = restTemplate.getForObject(url2, Bono.class);
 
-    return empleado;
+        double sueldoTotal = afpCalculada;
+        String nomBono = null;
+        double bonoEmp = 0;
+        String bonoDesc = null; 
+        if (bono != null){
+            nomBono = bono.getNombreBono();
+            bonoEmp = bono.getBonoEmpleado();
+            bonoDesc = bono.getDescripcion();
+            System.out.println("***Nomina de Pago***\nTrabajador: "+nombre+" "+apellido+"\nRut: "+rut+"\nCargo: "+cargo+"\nEstado Civil: "+estadoCivil);
+            System.out.println("Estado de contrato: "+estado+"\nCorreo: "+mail+"\nNumero telefonico: "+num+"\nDirección vivienda: "+dir);
+            System.out.println("Fecha de Firma del contrato: "+fechaIngreso+"\nFecha de Retiro: "+fechaSalida);
+            sueldoTotal = calculoBono(bonoEmp, nomBono, afpCalculada, bonoDesc);
+        }
+        
+        Double afpDescuento = Math.abs(afpCalculada - sueldoBase);
+        NominaSimple dto = new NominaSimple();
 
-
-
+        dto.setNombre(nombre);
+        dto.setApellido(apellido);
+        dto.setCargo(cargo);
+        dto.setRut(rut);
+        dto.setCorreo(mail);
+        dto.setSueldo_Base(sueldoBase);
+        dto.setAFP(AFP);
+        dto.setDescuento_de_AFP(afpDescuento);
+        dto.setNombre_Bono(nomBono);
+        dto.setCantidad_bono(bonoEmp);
+        dto.setDescripcion_Bono(bonoDesc);
+        
+        dto.setSueldo_Total(sueldoTotal);
+        return dto;
 }
 
-/* calculo del bono (en progreso) 
+/* calculo del bono
 Se abre despues de calculoAFP ya que el bono es un añadido al pago final*/
-public Double calculoBono(Integer empleadoId, Integer bonoid, String tipoBono, double bonoEmpleado, double sueldoTotal){
-//arreglar if (debe encontrar el id de empleado en bono u el id del bono en empleado dependiendo de como funciona bono)
-    if(bono == null){
-        System.out.println("El empleado no cuenta con ningun bono");
-    }else{
+public Double calculoBono(double bonoEmpleado, String tipoBono,double sueldoTotal, String descripcion){
     sueldoTotal = sueldoTotal + bonoEmpleado;
-    System.out.println("El bono '"+tipoBono+"' Se añadio al sueldo.\nBono: +"+bonoEmpleado);
+    System.out.println("El bono '"+tipoBono+"' Se añadio al sueldo.\nEl bono "+tipoBono+" se da por: "+descripcion+"\nBono: +"+bonoEmpleado+"\nTotal: "+sueldoTotal);
     return sueldoTotal;
     }
 
-}
-
-/* calculoAFP (Terminado)
+/* calculoAFP
 Usa Switch Case para optimizar la busquedad de afp y hacer el calculo, utilizando "tolowecase" para evitar confuciones entre uno Uno y variaciones*/
 public double calculoAFP(String AFP, double sueldoBase){
+    double sueldoTotal;
     switch(AFP.toLowerCase()){
         case "uno":
             sueldoTotal= sueldoBase - sueldoBase*0.046;

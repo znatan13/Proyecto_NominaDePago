@@ -1,16 +1,17 @@
 package com.nomina.nominaPago.model;
 
-import jakarta.persistence.Id;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
 public class Nomina {
-    @Id
+    
+    @NotNull
+    @Positive
     private Integer nomEmpleadoId;
+
     private Integer bonoId;
-    private Integer turnoId;
-    private String nombre;
-    private String apellido;
-    private String email;
 
 }
