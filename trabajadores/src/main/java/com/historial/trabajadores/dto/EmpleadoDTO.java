@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 
 public class EmpleadoDTO {
-
+    
+    private String rut;
     private String nombre;
     private String apellido;
     private String email;

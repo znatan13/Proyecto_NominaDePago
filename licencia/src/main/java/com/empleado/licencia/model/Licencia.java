@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,13 +29,13 @@ public class Licencia {
     @Column(nullable = false)
     private Integer empleadoid;
 
-    @NotNull(message= "La fecha de creacion no debe que estar nula")
+    @Column(nullable = false)
     private LocalDate fechaCreacion;
 
-    @NotNull(message= "La fecha de vencimiento no de que estar nula")
+    @Column(nullable = false)
     private LocalDate fechaVencimiento;
 
-    @NotBlank(message= "El estado no debe ser obligatorio")
+   
     @Column(nullable = false, length = 30)
     private String estado;
 
