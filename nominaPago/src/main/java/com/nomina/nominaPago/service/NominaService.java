@@ -1,7 +1,11 @@
 package com.nomina.nominaPago.service;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
+
+import javax.management.Notification;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -10,6 +14,7 @@ import com.nomina.nominaPago.dto.NominaSimple;
 import com.nomina.nominaPago.model.Bono;
 import com.nomina.nominaPago.model.Empleado;
 import com.nomina.nominaPago.model.Nomina;
+import com.nomina.nominaPago.model.Notificacion;
 import com.nomina.nominaPago.repository.NominaRepository;
 
 @Service
@@ -69,6 +74,8 @@ public NominaSimple nomina(Integer nomEmpleadoId){
         Double afpDescuento = Math.abs(afpCalculada - sueldoBase);
         NominaSimple dto = new NominaSimple();
 
+        
+
         dto.setNombre(nombre);
         dto.setApellido(apellido);
         dto.setCargo(cargo);
@@ -80,8 +87,21 @@ public NominaSimple nomina(Integer nomEmpleadoId){
         dto.setNombre_Bono(nomBono);
         dto.setCantidad_bono(bonoEmp);
         dto.setDescripcion_Bono(bonoDesc);
-        
         dto.setSueldo_Total(sueldoTotal);
+
+        try {
+        Notificacion notificacion = new Notificacion();
+
+        notificacion.setEmpleadoId(empleadoId);
+        notificacion.setTitulo("Generacion de nomina");
+        notificacion.setMensaje("Nomina de pago creada para el usuario:\nNombre: "+nombre+" "+apellido+"\nRut: "+rut+"\nSueldo bruto: "+sueldoBase+"\nSueldo liquido: "+sueldoTotal);
+        notificacion.setFecha(LocalDate.now());
+
+        String url3 = "http://localhost:8080/notificaciones";
+        restTemplate.postForObject(url3, notificacion, Notificacion.class);
+        }catch(Exception e){
+            System.out.println("Error al guardar notificacion");
+        }
         return dto;
 }
 
