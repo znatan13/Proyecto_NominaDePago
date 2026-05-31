@@ -28,10 +28,15 @@ public class LicenciaService {
 
         validarLicencia(licencia);
 
+        //Validacion -> dice si el empleado ya tiene licencia activa no puede crear otra licencia.
+        boolean licenciaActiva = repository.existsByempleadoIdAndestado(licencia.getEmpleadoid(), "Activo");
+
+        if(licenciaActiva){
+            throw new RuntimeException("Ya tiene una licencia asignada");
+        }
+
         licencia.setFechaCreacion(LocalDate.now());
-
         licencia.setFechaVencimiento(licencia.getFechaCreacion().plusDays(7));
-
         licencia.setEstado("Activo");
 
         return repository.save(licencia);
@@ -40,7 +45,7 @@ public class LicenciaService {
     public Licencia buscarLicencia(Integer idLicencia) {
 
         if (idLicencia == null || idLicencia <= 0) {
-            throw new IllegalArgumentException("El id licencia debe ser mayor a 0");
+            throw new IllegalArgumentException("El id licencia debe ser mayor a 0 y no debe ser nulo");
         }
 
         Licencia licencia = repository.findById(idLicencia).orElseThrow(() -> new RuntimeException("La licencia no existe"));
@@ -53,7 +58,7 @@ public class LicenciaService {
     public List<Licencia> buscarIdEmpleado(Integer empleadoId) {
 
         if(empleadoId == null || empleadoId <= 0) {
-            throw new IllegalArgumentException("El Id de empleado debe ser mayor a 0");
+            throw new IllegalArgumentException("El Id de empleado debe ser mayor a 0 y no debe ser nulo");
         }
 
         List<Licencia> licencias = repository.findByEmpleadoid(empleadoId);
@@ -114,7 +119,6 @@ public class LicenciaService {
     //Eliminar licencias
     public void eliminarLicencia(Integer idLicencia) {
         Licencia licencia = buscarLicencia(idLicencia);
-
         repository.delete(licencia);
     }
 
