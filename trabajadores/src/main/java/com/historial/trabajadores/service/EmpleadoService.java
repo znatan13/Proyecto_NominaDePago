@@ -1,10 +1,12 @@
 package com.historial.trabajadores.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.historial.trabajadores.dto.EmpleadoDTO;
 import com.historial.trabajadores.model.Empleado;
@@ -46,6 +48,9 @@ public class EmpleadoService {
     // Metodo post crear un empleado
     public Empleado crearEmpleado(Empleado empleadoNuevo) {
         validarEmpleado(empleadoNuevo);
+
+        
+
         return repository.save(empleadoNuevo);
     }
 
