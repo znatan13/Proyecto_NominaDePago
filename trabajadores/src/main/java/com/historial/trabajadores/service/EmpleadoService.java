@@ -49,6 +49,8 @@ public class EmpleadoService {
     public Empleado crearEmpleado(Empleado empleadoNuevo) {
         validarEmpleado(empleadoNuevo);
 
+        
+
         return repository.save(empleadoNuevo);
     }
 

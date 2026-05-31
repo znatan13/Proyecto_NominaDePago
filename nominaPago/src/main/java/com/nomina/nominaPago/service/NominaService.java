@@ -2,10 +2,7 @@ package com.nomina.nominaPago.service;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
-
-import javax.management.Notification;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,8 +10,10 @@ import org.springframework.web.client.RestTemplate;
 import com.nomina.nominaPago.dto.NominaSimple;
 import com.nomina.nominaPago.model.Bono;
 import com.nomina.nominaPago.model.Empleado;
+import com.nomina.nominaPago.model.Licencia;
 import com.nomina.nominaPago.model.Nomina;
 import com.nomina.nominaPago.model.Notificacion;
+import com.nomina.nominaPago.model.Turnos;
 import com.nomina.nominaPago.repository.NominaRepository;
 
 @Service
@@ -36,7 +35,7 @@ public NominaSimple nomina(Integer nomEmpleadoId){
     RestTemplate restTemplate = new RestTemplate();
 
     Integer empleadoId = nomina.getNomEmpleadoId();
-        String url = "http://localhost:8080/buscar/id/"+empleadoId;
+        String url = "http://localhost:8081/buscar/id/"+empleadoId;
         Empleado empleado = restTemplate.getForObject(url, Empleado.class);
 
         String nombre = empleado.getNombre();
@@ -53,9 +52,23 @@ public NominaSimple nomina(Integer nomEmpleadoId){
         double sueldoBase = empleado.getSueldoBase();
         String AFP = empleado.getAFP();
 
+
+        String url2 = "http://localhost:8082/turnos/buscar/empleadoid/"+empleadoId;
+        Turnos turnos = restTemplate.getForObject(url2, Turnos.class);
+        String horaInicio = turnos.getHoraInicio();
+        String horaFin = turnos.getHoraFin();
+
+        String ulr3 = "http://localhost:8085/licencias/buscar/empleado/"+empleadoId;
+        Licencia licencia = restTemplate.getForObject(ulr3, Licencia.class);
+
+        String LicenciaEstado = licencia.getEstado();
+
+
         double afpCalculada = calculoAFP(AFP, sueldoBase);
-        String url2 = "http://localhost:8080/buscar/empleado/"+empleadoId;
-        Bono bono = restTemplate.getForObject(url2, Bono.class);
+        String url4 = "http://localhost:8084/buscar/empleado/"+empleadoId;
+        Bono bono = restTemplate.getForObject(url4, Bono.class);
+
+
 
         double sueldoTotal = afpCalculada;
         String nomBono = null;
@@ -79,9 +92,11 @@ public NominaSimple nomina(Integer nomEmpleadoId){
         dto.setNombre(nombre);
         dto.setApellido(apellido);
         dto.setCargo(cargo);
+        dto.setHorario(horaInicio+"-"+horaFin);
         dto.setRut(rut);
         dto.setCorreo(mail);
         dto.setSueldo_Base(sueldoBase);
+        dto.setEstado_Licencia(LicenciaEstado);
         dto.setAFP(AFP);
         dto.setDescuento_de_AFP(afpDescuento);
         dto.setNombre_Bono(nomBono);
@@ -97,8 +112,8 @@ public NominaSimple nomina(Integer nomEmpleadoId){
         notificacion.setMensaje("Nomina de pago creada para el usuario:\nNombre: "+nombre+" "+apellido+"\nRut: "+rut+"\nSueldo bruto: "+sueldoBase+"\nSueldo liquido: "+sueldoTotal);
         notificacion.setFecha(LocalDate.now());
 
-        String url3 = "http://localhost:8080/notificaciones";
-        restTemplate.postForObject(url3, notificacion, Notificacion.class);
+        String url5 = "http://localhost:8080/notificaciones";
+        restTemplate.postForObject(url5, notificacion, Notificacion.class);
         }catch(Exception e){
             System.out.println("Error al guardar notificacion");
         }
@@ -119,32 +134,32 @@ public double calculoAFP(String AFP, double sueldoBase){
     double sueldoTotal;
     switch(AFP.toLowerCase()){
         case "uno":
-            sueldoTotal= sueldoBase - sueldoBase*0.046;
-            System.out.println("AFP Uno: 0,46%");
+            sueldoTotal= sueldoBase - sueldoBase*0.1046;
+            System.out.println("AFP Uno: 10,46%");
             break;
         case "modelo":
-            sueldoTotal= sueldoBase - sueldoBase*0.058;
-            System.out.println("AFP Modelo: 0,58%");
+            sueldoTotal= sueldoBase - sueldoBase*0.1058;
+            System.out.println("AFP Modelo: 10,58%");
             break;
         case "planvital":
-            sueldoTotal= sueldoBase - sueldoBase*0.116;
-            System.out.println("AFP Planvital: 1,16%");
+            sueldoTotal= sueldoBase - sueldoBase*0.1116;
+            System.out.println("AFP Planvital: 11,16%");
             break;
         case "habitat":
-            sueldoTotal= sueldoBase - sueldoBase*0.127;
-            System.out.println("AFP Habitat: 1,27%");
+            sueldoTotal= sueldoBase - sueldoBase*0.1127;
+            System.out.println("AFP Habitat: 11,27%");
             break;
         case "capital":
-            sueldoTotal= sueldoBase - sueldoBase*0.144;
-            System.out.println("AFP Capital: 1,44%");
+            sueldoTotal= sueldoBase - sueldoBase*0.1144;
+            System.out.println("AFP Capital: 11,44%");
             break;
         case "cuprum":
-            sueldoTotal= sueldoBase - sueldoBase*0.144;
-            System.out.println("AFP Cuprum: 1,44%");
+            sueldoTotal= sueldoBase - sueldoBase*0.1144;
+            System.out.println("AFP Cuprum: 11,44%");
             break;
         case "provida":
-            sueldoTotal= sueldoBase - sueldoBase*0.145;
-            System.out.println("AFP Provida: 1,45%");
+            sueldoTotal= sueldoBase - sueldoBase*0.1145;
+            System.out.println("AFP Provida: 11,45%");
             break;
         default:
             System.out.println("AFP no reconocida.");

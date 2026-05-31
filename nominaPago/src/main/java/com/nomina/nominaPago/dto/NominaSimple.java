@@ -7,13 +7,16 @@ public class NominaSimple {
     private String nombre;
     private String apellido;
     private String cargo;
+    private String horario;
     private String rut;
     private String AFP;
     private double sueldo_Base;
-    private double sueldo_Total;
+    private double descuento_de_AFP;
+    private String Estado_Licencia;
     private String nombre_Bono;
     private double cantidad_bono;
     private String descripcion_Bono;
     private String correo;
-    private double descuento_de_AFP;
+    private double sueldo_Total;
+
 }
