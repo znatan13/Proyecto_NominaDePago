@@ -1,12 +1,11 @@
 package com.historial.trabajadores.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+
 
 import com.historial.trabajadores.dto.EmpleadoDTO;
 import com.historial.trabajadores.model.Empleado;
@@ -98,6 +97,7 @@ public class EmpleadoService {
     // Metodo para reutilizar codigo en los get buscar.
     public EmpleadoDTO empleadoDto(Empleado empleado) {
         EmpleadoDTO dto = new EmpleadoDTO();
+        dto.setRut(empleado.getRut());
         dto.setNombre(empleado.getNombre());
         dto.setApellido(empleado.getApellido());
         dto.setEmail(empleado.getEmail());

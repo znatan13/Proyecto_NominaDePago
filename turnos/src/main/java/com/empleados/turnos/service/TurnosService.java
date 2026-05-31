@@ -142,6 +142,7 @@ public class TurnosService {
 
        List<Turnos> listarTurnosEmpleado = repository.findByEmpleadoId(empleadoId);
        EmpleadoSimple empleadoSimple = new EmpleadoSimple();
+       empleadoSimple.setRut(empleado.getRut());
        empleadoSimple.setNombre(empleado.getNombre());
        empleadoSimple.setApellido(empleado.getApellido());
        empleadoSimple.setCargo(empleado.getCargo());
