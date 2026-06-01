@@ -48,6 +48,8 @@ public Nomina crearNomina(Nomina nomina){
     double afpCalculada = calculoAFP(AFP, sueldoBase);
     Double sueldoTotal;
 
+    /* ESTA URL LA CREE EN BONO DONDE BONO SE TRABAJA CON LIST DABA ERROR
+    BUENO ESTA URL SOLO TARE LIST(0) -> ES DECIR SOLO 1 EMPLEADO ASI EVITAMOS ERRORES */
     String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/" + nomina.getNomEmpleadoId();
     Bono bono = restTemplate.getForObject(url2, Bono.class);
     if (bono != null){
@@ -86,13 +88,17 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
         throw new RuntimeException("El empleado buscado no existe");
     }
     
+    /* ESTA URL LA CREE EN BONO DONDE BONO SE TRABAJA CON LIST DABA ERROR
+    BUENO ESTA URL SOLO TARE LIST(0) -> ES DECIR SOLO 1 EMPLEADO ASI EVITAMOS ERRORES */
     String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/"+nomina.getNomEmpleadoId();
     Bono bono = restTemplate.getForObject(url2, Bono.class);
     if (bono == null){
         throw new RuntimeException("No tiene bono.");
     }
 
-    String ulr3 = "http://localhost:8085/licencias/buscar/empleado/"+nomina.getNomEmpleadoId();
+    /* MATI ESE URL SIRVE PARA BUSCAR LAS LICENCIAS DE TAL EMPLEADO POR EJ : ID = 4
+    MOSTRARA SOLO LAS LICENCIA DE EMPLEADO 4  */
+    String ulr3 = "http://localhost:8085/licencias/buscar/empleadoLicencia/"+nomina.getNomEmpleadoId();
     Licencia licencia = restTemplate.getForObject(ulr3, Licencia.class);
     if(licencia != null){
         //contar
