@@ -32,17 +32,43 @@ public void validaciones(Nomina nomina){
         throw new IllegalArgumentException("El sueldo liquido debe ser positivo y en un margen coherente.");
     }else    if (nomina.getNomEmpleadoId() == null || nomina.getNomEmpleadoId() <= 0){
         throw new IllegalArgumentException("El Id del empleado no puede estar Nulo y debe ser mayor a cero.");
-    }else    if (nomina.getBonoId() <= 0){
+    }else    if (nomina.getBonoId() == null || nomina.getBonoId() <= 0){
         throw new IllegalArgumentException("El Id del bono debe ser positivo.");
     }
 }
 
+public Nomina buscarNomina (Integer nominaId){
+
+    if(nominaId == null || nominaId <= 0){
+        throw new IllegalArgumentException("El id de nomina no debe ser nula y debe ser mayor 0");
+    }
+    Optional<Nomina> buscar = repository.findById(nominaId);
+    if(buscar.isEmpty()){
+        throw new RuntimeException("El id : " + nominaId + " no existe");
+    }
+    return buscar.get();
+}
+
 public Nomina crearNomina(Nomina nomina){
+
+    if(nomina == null){
+        throw new IllegalArgumentException("La nomina no debe ser nula");
+    }
+
     RestTemplate restTemplate = new RestTemplate();
     String url = "http://localhost:8081/empleados/buscar/id/"+nomina.getNomEmpleadoId();
-    Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+    Empleado empleado;
+
+    //si el microservicio de por casualidad se apaga o no prende muestre mensaje no se pudo conectar
+    try{
+        empleado = restTemplate.getForObject(url, Empleado.class);
+    }catch(Exception error){
+        throw new RuntimeException("No se pudo conectar con empleados");
+    }
+
     if(empleado == null){
         throw new RuntimeException("El empleado buscado no existe");}
+
     double sueldoBase = empleado.getSueldoBase();
     String AFP = empleado.getAfp();
     double afpCalculada = calculoAFP(AFP, sueldoBase);
@@ -51,7 +77,14 @@ public Nomina crearNomina(Nomina nomina){
     /* ESTA URL LA CREE EN BONO DONDE BONO SE TRABAJA CON LIST DABA ERROR
     BUENO ESTA URL SOLO TARE LIST(0) -> ES DECIR SOLO 1 EMPLEADO ASI EVITAMOS ERRORES */
     String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/" + nomina.getNomEmpleadoId();
-    Bono bono = restTemplate.getForObject(url2, Bono.class);
+    Bono bono;
+
+    try{
+        bono = restTemplate.getForObject(url2, Bono.class);
+    }catch(Exception error){
+        throw new RuntimeException("No se pudo conectar con bonos");
+    }
+
     if (bono != null){
         String nomBono = bono.getNombreBono();
         Float bonoEmp = bono.getBonoEmpleado();
@@ -64,13 +97,13 @@ public Nomina crearNomina(Nomina nomina){
     return repository.save(nomina);
 }
 
-public Nomina buscarNomina(Integer nomEmpleadoId){
+public Nomina buscarEmpleado(Integer nomEmpleadoId){
     if(nomEmpleadoId == null || nomEmpleadoId <= 0){
         throw new IllegalArgumentException("El Id del empleado no puede estar Nulo y debe ser mayor a cero");
     }
     Optional<Nomina> buscar = repository.findByNomEmpleadoId(nomEmpleadoId);
     if(buscar.isEmpty()){
-        throw new RuntimeException("El usuario no existe.");
+        throw new RuntimeException("El empleado no existe.");
     }
     return buscar.get();
 }
@@ -83,7 +116,13 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
     buscarNomina(nomEmpleadoId);
 
     String url = "http://localhost:8081/empleados/buscar/id/"+nomina.getNomEmpleadoId();
-    Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+    Empleado empleado;
+    try{    
+        empleado = restTemplate.getForObject(url, Empleado.class);
+    }catch(Exception error){
+        throw new RuntimeException("No se pudo conectar con empleados");
+    }
+
     if(empleado == null){
         throw new RuntimeException("El empleado buscado no existe");
     }
@@ -91,7 +130,14 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
     /* ESTA URL LA CREE EN BONO DONDE BONO SE TRABAJA CON LIST DABA ERROR
     BUENO ESTA URL SOLO TARE LIST(0) -> ES DECIR SOLO 1 EMPLEADO ASI EVITAMOS ERRORES */
     String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/"+nomina.getNomEmpleadoId();
-    Bono bono = restTemplate.getForObject(url2, Bono.class);
+    Bono bono;
+
+    try{
+        bono = restTemplate.getForObject(url2, Bono.class);
+    }catch(Exception error){
+        throw new RuntimeException("No se pudo conectar con bonos");
+    }
+
     if (bono == null){
         throw new RuntimeException("No tiene bono.");
     }
@@ -99,7 +145,12 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
     /* MATI ESE URL SIRVE PARA BUSCAR LAS LICENCIAS DE TAL EMPLEADO POR EJ : ID = 4
     MOSTRARA SOLO LAS LICENCIA DE EMPLEADO 4  */
     String ulr3 = "http://localhost:8085/licencias/buscar/empleadoLicencia/"+nomina.getNomEmpleadoId();
-    Licencia licencia = restTemplate.getForObject(ulr3, Licencia.class);
+    Licencia licencia;
+    try{
+        licencia = restTemplate.getForObject(ulr3, Licencia.class);
+    }catch(Exception error){
+        throw new RuntimeException("No se pudo conectar con licencia");
+    }
     if(licencia != null){
         //contar
     }
@@ -135,14 +186,36 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
 
     return dto;
     }
+public void elimimarNomina(Integer nominaId){
+    if(nominaId == null || nominaId <= 0){
+        throw new IllegalArgumentException("El id de nomina no debe ser nulo y debe ser mayor a 0");
+    }
+    if(repository.existsById(nominaId)){
+        repository.deleteById(nominaId);
+    }else{
+        throw new RuntimeException("El id : " + nominaId + " que desea eliminar no existe");
+    }
+}
 
+    
 public Double calculoBono(double bonoEmpleado, String tipoBono,double sueldoTotal, String descripcion){
+
+    if(bonoEmpleado < 0 || sueldoTotal < 0){
+        throw new IllegalArgumentException("El bono empleado y sueldo total debe ser un valor positivo");
+    }
     sueldoTotal = sueldoTotal + bonoEmpleado;
     System.out.println("El bono '"+tipoBono+"' Se añadio al sueldo.\nEl bono "+tipoBono+" se da por: "+descripcion+"\nBono: +"+bonoEmpleado+"\nTotal: "+sueldoTotal);
     return sueldoTotal;
     }
 
 public double calculoAFP(String AFP, double sueldoBase){
+    if(AFP == null){
+        throw new IllegalArgumentException("La afp no debe ser nula");
+    }
+    if(sueldoBase < 0 ){
+        throw new IllegalArgumentException("El sueldo base debe ser un numero positivo");
+    }
+
     double sueldoTotal;
     switch(AFP.toLowerCase()){
         case "uno":
