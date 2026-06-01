@@ -13,7 +13,6 @@ import com.nomina.nominaPago.model.Empleado;
 import com.nomina.nominaPago.model.Licencia;
 import com.nomina.nominaPago.model.Nomina;
 import com.nomina.nominaPago.model.Notificacion;
-import com.nomina.nominaPago.model.Turnos;
 import com.nomina.nominaPago.repository.NominaRepository;
 
 @Service
@@ -24,92 +23,102 @@ public class NominaService {
         this.repository = repository;
     }
 
-/* busqueda de datos para la nomina */
-public NominaSimple nomina(Integer nomEmpleadoId){
-    Optional<Nomina> nominaOp = repository.findById(nomEmpleadoId);
-    if(nominaOp.isEmpty()){
-        System.out.println("el empleado no existe");
-        return null;
+public void validaciones(Nomina nomina){
+    if (nomina == null){
+        throw new IllegalArgumentException("Nomina no puede estar Nulo.");
+    }else     if (nomina.getSueldoLiquido() == null){
+        throw new IllegalArgumentException("El sueldo no puede ser Nulo.");
+    }else    if (nomina.getSueldoLiquido() < 0 || nomina.getSueldoLiquido() > 999999999){
+        throw new IllegalArgumentException("El sueldo liquido debe ser positivo y en un margen coherente.");
+    }else    if (nomina.getNomEmpleadoId() == null || nomina.getNomEmpleadoId() <= 0){
+        throw new IllegalArgumentException("El Id del empleado no puede estar Nulo y debe ser mayor a cero.");
+    }else    if (nomina.getBonoId() <= 0){
+        throw new IllegalArgumentException("El Id del bono debe ser positivo.");
     }
-    Nomina nomina = nominaOp.get();
+}
+
+public Nomina crearNomina(Nomina nomina){
+    RestTemplate restTemplate = new RestTemplate();
+    String url = "http://localhost:8081/empleados/buscar/id/"+nomina.getNomEmpleadoId();
+    Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+    if(empleado == null){
+        throw new RuntimeException("El empleado buscado no existe");}
+    double sueldoBase = empleado.getSueldoBase();
+    String AFP = empleado.getAFP();
+    double afpCalculada = calculoAFP(AFP, sueldoBase);
+    Double sueldoTotal;
+
+    String url2 = "http://localhost:8084/buscar/empleado/"+nomina.getNomEmpleadoId();
+    Bono bono = restTemplate.getForObject(url2, Bono.class);
+    if (bono != null){
+        String nomBono = bono.getNombreBono();
+        Float bonoEmp = bono.getBonoEmpleado();
+        String bonoDesc = bono.getDescripcion();
+        sueldoTotal = calculoBono(bonoEmp, nomBono, afpCalculada, bonoDesc);
+    }else{sueldoTotal = afpCalculada;}
+    nomina.setSueldoLiquido(sueldoTotal);
+
+    validaciones(nomina);
+    return repository.save(nomina);
+}
+
+public Nomina buscarNomina(Integer nomEmpleadoId){
+    if(nomEmpleadoId == null || nomEmpleadoId <= 0){
+        throw new IllegalArgumentException("El Id del empleado no puede estar Nulo y debe ser mayor a cero");
+    }
+    Optional<Nomina> buscar = repository.findByNomEmpleadoId(nomEmpleadoId);
+    if(buscar.isEmpty()){
+        throw new RuntimeException("El usuario no existe.");
+    }
+    return buscar.get();
+}
+
+public NominaSimple nominaDTO(Integer nomEmpleadoId){
+    Nomina nomina = buscarNomina(nomEmpleadoId);
+    NominaSimple dto = new NominaSimple();
     RestTemplate restTemplate = new RestTemplate();
 
-    Integer empleadoId = nomina.getNomEmpleadoId();
-        String url = "http://localhost:8081/buscar/id/"+empleadoId;
-        Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+    buscarNomina(nomEmpleadoId);
 
-        String nombre = empleado.getNombre();
-        String apellido = empleado.getApellido();
-        String rut = empleado.getRut();
-        String mail = empleado.getEmail();
-        String num = empleado.getNumeroTelefono();
-        String dir = empleado.getDireccion();
-        String estadoCivil = empleado.getEstadoCivil();
-        String fechaIngreso = empleado.getFechaIngreso();
-        String fechaSalida = empleado.getFechaSalida();
-        String cargo = empleado.getCargo();
-        String estado = empleado.getEstado();
-        double sueldoBase = empleado.getSueldoBase();
-        String AFP = empleado.getAFP();
+    String url = "http://localhost:8081/empleados/buscar/id/"+nomina.getNomEmpleadoId();
+    Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+    if(empleado == null){
+        throw new RuntimeException("El empleado buscado no existe");
+    }
+    
+    String url2 = "http://localhost:8084/buscar/empleado/"+nomina.getNomEmpleadoId();
+    Bono bono = restTemplate.getForObject(url2, Bono.class);
+    if (bono != null){
+        throw new RuntimeException("No tiene bono.");
+    }
 
+    String ulr3 = "http://localhost:8085/licencias/buscar/empleado/"+nomina.getNomEmpleadoId();
+    Licencia licencia = restTemplate.getForObject(ulr3, Licencia.class);
+    if(licencia != null){
+        //contar
+    }
 
-        String url2 = "http://localhost:8082/turnos/buscar/empleadoid/"+empleadoId;
-        Turnos turnos = restTemplate.getForObject(url2, Turnos.class);
-        String horaInicio = turnos.getHoraInicio();
-        String horaFin = turnos.getHoraFin();
-
-        String ulr3 = "http://localhost:8085/licencias/buscar/empleado/"+empleadoId;
-        Licencia licencia = restTemplate.getForObject(ulr3, Licencia.class);
-
-        String LicenciaEstado = licencia.getEstado();
-
-
-        double afpCalculada = calculoAFP(AFP, sueldoBase);
-        String url4 = "http://localhost:8084/buscar/empleado/"+empleadoId;
-        Bono bono = restTemplate.getForObject(url4, Bono.class);
-
-
-
-        double sueldoTotal = afpCalculada;
-        String nomBono = null;
-        double bonoEmp = 0;
-        String bonoDesc = null; 
-        if (bono != null){
-            nomBono = bono.getNombreBono();
-            bonoEmp = bono.getBonoEmpleado();
-            bonoDesc = bono.getDescripcion();
-            System.out.println("***Nomina de Pago***\nTrabajador: "+nombre+" "+apellido+"\nRut: "+rut+"\nCargo: "+cargo+"\nEstado Civil: "+estadoCivil);
-            System.out.println("Estado de contrato: "+estado+"\nCorreo: "+mail+"\nNumero telefonico: "+num+"\nDirección vivienda: "+dir);
-            System.out.println("Fecha de Firma del contrato: "+fechaIngreso+"\nFecha de Retiro: "+fechaSalida);
-            sueldoTotal = calculoBono(bonoEmp, nomBono, afpCalculada, bonoDesc);
-        }
-        
-        Double afpDescuento = Math.abs(afpCalculada - sueldoBase);
-        NominaSimple dto = new NominaSimple();
-
-        
-
-        dto.setNombre(nombre);
-        dto.setApellido(apellido);
-        dto.setCargo(cargo);
-        dto.setHorario(horaInicio+"-"+horaFin);
-        dto.setRut(rut);
-        dto.setCorreo(mail);
-        dto.setSueldo_Base(sueldoBase);
-        dto.setEstado_Licencia(LicenciaEstado);
-        dto.setAFP(AFP);
-        dto.setDescuento_de_AFP(afpDescuento);
-        dto.setNombre_Bono(nomBono);
-        dto.setCantidad_bono(bonoEmp);
-        dto.setDescripcion_Bono(bonoDesc);
-        dto.setSueldo_Total(sueldoTotal);
+    dto.setNombre(empleado.getNombre());
+    dto.setApellido(empleado.getApellido());
+    dto.setCargo(empleado.getCargo());
+    dto.setHorario(empleado.getFechaIngreso()+"-"+empleado.getFechaSalida());
+    dto.setRut(empleado.getRut());
+    dto.setCorreo(empleado.getEmail());
+    dto.setSueldo_Base(empleado.getSueldoBase());
+    dto.setLicencias(licencia);
+    dto.setAFP(empleado.getAFP());
+    dto.setNombre_Bono(bono.getNombreBono());
+    dto.setCantidad_bono(bono.getBonoEmpleado());
+    dto.setDescripcion_Bono(bono.getDescripcion());
+    dto.setSueldo_Total(nomina.getSueldoLiquido());
+    dto.setNomina(nomina);
 
         try {
         Notificacion notificacion = new Notificacion();
 
-        notificacion.setEmpleadoId(empleadoId);
+        notificacion.setEmpleadoId(nomEmpleadoId);
         notificacion.setTitulo("Generacion de nomina");
-        notificacion.setMensaje("Nomina de pago creada para el usuario:\nNombre: "+nombre+" "+apellido+"\nRut: "+rut+"\nSueldo bruto: "+sueldoBase+"\nSueldo liquido: "+sueldoTotal);
+        notificacion.setMensaje("Nomina de pago creada para el usuario:\nNombre: "+empleado.getNombre()+" "+empleado.getApellido()+"\nRut: "+empleado.getRut()+"\nSueldo bruto: "+empleado.getSueldoBase()+"\nSueldo liquido: "+nomina.getSueldoLiquido());
         notificacion.setFecha(LocalDate.now());
 
         String url5 = "http://localhost:8080/notificaciones";
@@ -117,19 +126,16 @@ public NominaSimple nomina(Integer nomEmpleadoId){
         }catch(Exception e){
             System.out.println("Error al guardar notificacion");
         }
-        return dto;
-}
 
-/* calculo del bono
-Se abre despues de calculoAFP ya que el bono es un añadido al pago final*/
+    return dto;
+    }
+
 public Double calculoBono(double bonoEmpleado, String tipoBono,double sueldoTotal, String descripcion){
     sueldoTotal = sueldoTotal + bonoEmpleado;
     System.out.println("El bono '"+tipoBono+"' Se añadio al sueldo.\nEl bono "+tipoBono+" se da por: "+descripcion+"\nBono: +"+bonoEmpleado+"\nTotal: "+sueldoTotal);
     return sueldoTotal;
     }
 
-/* calculoAFP
-Usa Switch Case para optimizar la busquedad de afp y hacer el calculo, utilizando "tolowecase" para evitar confuciones entre uno Uno y variaciones*/
 public double calculoAFP(String AFP, double sueldoBase){
     double sueldoTotal;
     switch(AFP.toLowerCase()){
@@ -166,9 +172,7 @@ public double calculoAFP(String AFP, double sueldoBase){
             sueldoTotal = sueldoBase;
             break;
     }
-    // se entrega lo que descuenta el afp EJ: "descuento afp: -5000", y luego da el total con el descuento, math.abs encuentra cual fue la resta u suma entre 2 numeros.
-    System.out.println("\nDescuento AFP: -"+(Math.abs(sueldoBase-sueldoTotal))+"\nTotal: "+sueldoTotal);
-    return sueldoTotal;
+return sueldoTotal;
      
 }
 

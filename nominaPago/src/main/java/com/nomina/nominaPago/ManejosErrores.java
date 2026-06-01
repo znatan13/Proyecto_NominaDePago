@@ -1,0 +1,62 @@
+package com.nomina.nominaPago;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.nomina.nominaPago.dto.ErrorDTO;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+@RestControllerAdvice
+public class ManejosErrores {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDTO> manejarValidaciones(
+        MethodArgumentNotValidException ex,
+        HttpServletRequest request){
+        Map<String, String> errores = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> errores.put(error.getField(), error.getDefaultMessage()));
+        ErrorDTO errorDTO = new ErrorDTO(
+            LocalDateTime.now(),
+            400,
+            "Errores de validaciones, intente de nuevo",
+            request.getRequestURI(),
+            errores
+        );
+        return ResponseEntity.badRequest().body(errorDTO);
+        }
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity<ErrorDTO> manejarErrores(
+            RuntimeException ex,
+            HttpServletRequest request){
+
+                ErrorDTO errorDTO = new ErrorDTO(
+                    LocalDateTime.now(),
+                    404,
+                    ex.getMessage(),
+                    request.getRequestURI(),
+                    null
+                );
+                    return ResponseEntity.status(404).body(errorDTO);
+            }
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<ErrorDTO> manejarArgumentosInvalidos(
+            IllegalArgumentException ex,
+            HttpServletRequest request){
+
+                ErrorDTO errorDTO = new ErrorDTO(
+                    LocalDateTime.now(),
+                    400,
+                    ex.getMessage(),
+                    request.getRequestURI(),
+                    null
+                );
+                return ResponseEntity.status(400).body(errorDTO);
+        }
+}

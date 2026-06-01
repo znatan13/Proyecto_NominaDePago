@@ -11,9 +11,7 @@ public class Notificacion {
     private Integer empleadoId;
 
     private String titulo;
-
     private String mensaje;
-
     private LocalDate fecha;
 
 }
