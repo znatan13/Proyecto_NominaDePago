@@ -15,7 +15,7 @@ public class NominaSimple {
     private String cargo;
     private String horario;
 
-    private String AFP;
+    private String afp;
     private double sueldo_Base;
 
     private Licencia licencias;

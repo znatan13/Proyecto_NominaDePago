@@ -44,11 +44,11 @@ public Nomina crearNomina(Nomina nomina){
     if(empleado == null){
         throw new RuntimeException("El empleado buscado no existe");}
     double sueldoBase = empleado.getSueldoBase();
-    String AFP = empleado.getAFP();
+    String AFP = empleado.getAfp();
     double afpCalculada = calculoAFP(AFP, sueldoBase);
     Double sueldoTotal;
 
-    String url2 = "http://localhost:8084/buscar/empleado/"+nomina.getNomEmpleadoId();
+    String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/" + nomina.getNomEmpleadoId();
     Bono bono = restTemplate.getForObject(url2, Bono.class);
     if (bono != null){
         String nomBono = bono.getNombreBono();
@@ -86,9 +86,9 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
         throw new RuntimeException("El empleado buscado no existe");
     }
     
-    String url2 = "http://localhost:8084/buscar/empleado/"+nomina.getNomEmpleadoId();
+    String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/"+nomina.getNomEmpleadoId();
     Bono bono = restTemplate.getForObject(url2, Bono.class);
-    if (bono != null){
+    if (bono == null){
         throw new RuntimeException("No tiene bono.");
     }
 
@@ -106,7 +106,7 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
     dto.setCorreo(empleado.getEmail());
     dto.setSueldo_Base(empleado.getSueldoBase());
     dto.setLicencias(licencia);
-    dto.setAFP(empleado.getAFP());
+    dto.setAfp(empleado.getAfp());
     dto.setNombre_Bono(bono.getNombreBono());
     dto.setCantidad_bono(bono.getBonoEmpleado());
     dto.setDescripcion_Bono(bono.getDescripcion());

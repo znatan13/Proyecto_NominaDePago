@@ -13,6 +13,7 @@ public class LicenciaEmpleado {
     private String apellido;
     private String rut;
     private String cargo;
+    private List<Licencia> licencias;
 
-    private List<Licencia> licencia;
+
 }

@@ -63,6 +63,11 @@ public class BonoController {
         BonosEmpleado bonosEmpleado = service.bonosEmpleado(empleadoId);
         return ResponseEntity.ok().body(bonosEmpleado);
     }
+    @GetMapping("/buscar/bonoUnico/{empleadoId}")
+    public ResponseEntity<?> bonoUnico (@PathVariable Integer empleadoId){
+        Bono bonounico = service.bonoUnico(empleadoId);
+        return ResponseEntity.ok().body(bonounico);
+    }
     @DeleteMapping("/eliminar/{bonoId}")
     public ResponseEntity<?> eliminarBono (@PathVariable Integer bonoId){
         service.eliminarBono(bonoId);

@@ -29,7 +29,7 @@ public class LicenciaService {
         validarLicencia(licencia);
 
         //Validacion -> dice si el empleado ya tiene licencia activa no puede crear otra licencia.
-        boolean licenciaActiva = repository.existsByempleadoIdAndestado(licencia.getEmpleadoid(), "Activo");
+        boolean licenciaActiva = repository.existsByempleadoidAndEstado(licencia.getEmpleadoid(), "Activo");
 
         if(licenciaActiva){
             throw new RuntimeException("Ya tiene una licencia asignada");
@@ -143,7 +143,7 @@ public class LicenciaService {
         licenciaEmpleado.setRut(empleado.getRut());
         licenciaEmpleado.setCargo(empleado.getCargo());
 
-        licenciaEmpleado.setLicencia(listarLicenciaEmpleados);
+        licenciaEmpleado.setLicencias(listarLicenciaEmpleados);
 
         return licenciaEmpleado;
     }

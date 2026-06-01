@@ -1,5 +1,6 @@
 package com.historial.trabajadores.service;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class EmpleadoService {
         if(empleadoNuevo.getSueldoBase() <= 0){
             throw new IllegalArgumentException("El sueldo base no puede ser negativo");
         }
-        if(!"Activo".equals(empleadoNuevo.getEstado()) && !"Inactivo".equals(empleadoNuevo.getEstado())){
+        if(!"activo".equals(empleadoNuevo.getEstado().toLowerCase()) && !"inactivo".equals(empleadoNuevo.getEstado().toLowerCase())){
             throw new IllegalArgumentException("El empleado debe tener un estado activo o inactivo");
         }
         if("Activo".equals(empleadoNuevo.getEstado()) && empleadoNuevo.getFechaDeBaja() != null){
@@ -47,9 +48,6 @@ public class EmpleadoService {
     // Metodo post crear un empleado
     public Empleado crearEmpleado(Empleado empleadoNuevo) {
         validarEmpleado(empleadoNuevo);
-
-        
-
         return repository.save(empleadoNuevo);
     }
 
@@ -102,7 +100,8 @@ public class EmpleadoService {
         dto.setApellido(empleado.getApellido());
         dto.setEmail(empleado.getEmail());
         dto.setCargo(empleado.getCargo());
-        dto.setEstadoCivil(empleado.getEstadoCivil());
+        dto.setSueldoBase(empleado.getSueldoBase());
+        dto.setAfp(empleado.getAfp());
         return dto;
     }
 

@@ -20,5 +20,5 @@ public class Empleado {
     private String cargo;
     private String estado;
     private double sueldoBase;
-    private String AFP;
+    private String afp;
 }

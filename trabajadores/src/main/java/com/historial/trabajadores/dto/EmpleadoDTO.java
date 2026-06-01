@@ -15,6 +15,7 @@ public class EmpleadoDTO {
     private String apellido;
     private String email;
     private String cargo;
-    private String estadoCivil;
+    private double sueldoBase;
+    private String afp;
 
 }

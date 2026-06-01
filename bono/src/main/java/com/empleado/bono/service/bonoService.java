@@ -47,6 +47,18 @@ public class bonoService {
         }
         return buscarIdEmpleado;
     }
+    //metodo para trabajar solo 1 empleado de la lista para usarlo en nomina
+    public Bono bonoUnico (Integer empleadoId){
+        if(empleadoId ==null || empleadoId <= 0 ){
+            throw new IllegalArgumentException("El id del empleado no debe ser nulo y debe ser mayor a 0");
+        }
+        List<Bono> bonoUnico = repository.findByEmpleadoId(empleadoId);
+        if(bonoUnico.isEmpty()){
+            throw new RuntimeException("No existe bono");
+        }
+        return bonoUnico.get(0);
+
+    }
     //metodo reautilizable en crear un bono y actualizar para evitar doble logica
     public void validarBono(Bono bono){
 
