@@ -2,6 +2,7 @@ package com.nomina.nominaPago.service;
 
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class NominaService {
     public NominaService(NominaRepository repository){
         this.repository = repository;
     }
+
+public List<Nomina> listar(){
+    return repository.findAll();
+}
 
 public void validaciones(Nomina nomina){
     if (nomina == null){
@@ -173,10 +178,10 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
         notificacion.setMensaje("Nomina de pago creada para el usuario:\nNombre: "+empleado.getNombre()+" "+empleado.getApellido()+"\nRut: "+empleado.getRut()+"\nSueldo bruto: "+empleado.getSueldoBase()+"\nSueldo liquido: "+nomina.getSueldoLiquido());
         notificacion.setFecha(LocalDate.now());
 
-        String url5 = "http://localhost:8080/notificaciones";
+        String url5 = "http://localhost:8088/notificaciones";
         restTemplate.postForObject(url5, notificacion, Notificacion.class);
         }catch(Exception e){
-            System.out.println("Error al guardar notificacion");
+            throw new RuntimeException("Error de generar la notificacion");
         }
 
     return dto;
