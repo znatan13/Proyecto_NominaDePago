@@ -105,7 +105,7 @@ public class LicenciaService {
             throw new IllegalArgumentException("La licencia no puede ser nula");
         }
 
-        if (licencia.getEmpleadoid() == null || licencia.getEmpleadoid() <= 0) {
+        if (licencia.getEmpleadoid() == null || licencia.getEmpleadoid() < 1) {
             throw new IllegalArgumentException("El id empleado debe ser mayor a 0");
         }
         if(licencia.getEstado() != null && licencia.getEstado().length() > 30){

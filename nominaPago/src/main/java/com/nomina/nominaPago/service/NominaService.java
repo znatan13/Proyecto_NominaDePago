@@ -195,7 +195,21 @@ public void elimimarNomina(Integer nominaId){
         throw new RuntimeException("El id : " + nominaId + " que desea eliminar no existe");
     }
 }
+public Nomina actualizarNomina(Integer nominaId, Nomina actualizado){
+        if(nominaId == null || nominaId <= 0){
+        throw new IllegalArgumentException("La Nomina no existe");
+    } 
+    Optional<Nomina> nominaBuscar = repository.findById(nominaId);
+            if(nominaBuscar.isEmpty()){
+        throw new IllegalArgumentException("No hay Nomina con el Id: "+nominaId);
+    } 
+    Nomina nomina = nominaBuscar.get();
 
+    nomina.setSueldoLiquido(actualizado.getSueldoLiquido());
+
+
+    return repository.save(nomina);
+}
     
 public Double calculoBono(double bonoEmpleado, String tipoBono,double sueldoTotal, String descripcion){
 

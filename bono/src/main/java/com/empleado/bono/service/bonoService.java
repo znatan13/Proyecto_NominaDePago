@@ -1,5 +1,6 @@
 package com.empleado.bono.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import com.empleado.bono.dto.BonosEmpleado;
 import com.empleado.bono.model.Bono;
 import com.empleado.bono.model.Empleado;
+import com.empleado.bono.model.Notificacion;
 import com.empleado.bono.repository.bonoRepository;
 
 @Service
@@ -93,6 +95,18 @@ public class bonoService {
     //metodo crear un bono
     public Bono crearBono (Bono bonoNuevo){
         validarBono(bonoNuevo); // metodo reautilizable
+        Notificacion notificacion = new Notificacion();
+        RestTemplate restTemplate = new RestTemplate();
+
+        notificacion.setEmpleadoId(bonoNuevo.getEmpleadoId());
+        notificacion.setTitulo("Generacion de bono");
+        notificacion.setMensaje(
+            "Bono generado para : " +
+            bonoNuevo.getNombreBono() + " " +
+            bonoNuevo.getBonoEmpleado()
+    );
+        notificacion.setFecha(LocalDate.now());
+        restTemplate.postForObject( "http://localhost:8088/notificaciones/crear", notificacion, Notificacion.class);
         return repository.save(bonoNuevo);
     }
 

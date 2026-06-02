@@ -3,7 +3,6 @@ package com.control.asistencia.service;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,8 +32,8 @@ public class AsistenciaService {
         if(asistencia == null){
             throw new IllegalArgumentException("La asistencia no puede estar nula");
         }
-        if(!"Atrasado".equals(asistencia.getEstadoAsistencia()) && !"Puntual".equals(asistencia.getEstadoAsistencia()) 
-            && !"Ausente".equals(asistencia.getEstadoAsistencia())){
+        if(!"atrasado".equals(asistencia.getEstadoAsistencia().toLowerCase()) && !"puntual".equals(asistencia.getEstadoAsistencia().toLowerCase()) 
+            && !"ausente".equals(asistencia.getEstadoAsistencia().toLowerCase())){
             throw new IllegalArgumentException("El estado de la asistencia debe ser: puntual, atrasado o ausente");
         }
         if(asistencia.getTurnoId() == null || asistencia.getTurnoId() <= 0){

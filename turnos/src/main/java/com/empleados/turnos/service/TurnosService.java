@@ -5,7 +5,6 @@ package com.empleados.turnos.service;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -66,10 +65,7 @@ public class TurnosService {
         if(turno == null){
             throw new IllegalArgumentException("El turno no puede ser nulo");
         }
-        if (turno.getEmpleadoId() == null || turno.getEmpleadoId() <= 0){
-            throw new IllegalArgumentException("Los datos del turno no son validos");
-        }
-        if(!"Trabajando".equals(turno.getEstado()) && !"Descansando".equals(turno.getEstado())){
+        if(!"trabajando".equals(turno.getEstado().toLowerCase()) && !"descansando".equals(turno.getEstado().toLowerCase())){
             throw new IllegalArgumentException("El estado del turno debe ser trabajando o descansando");
         }
 
@@ -98,7 +94,6 @@ public class TurnosService {
 
         if (existe.isPresent() && turnoNuevo != null) {
             Turnos turnos = existe.get();
-            turnos.setEmpleadoId(turnoNuevo.getEmpleadoId());
             turnos.setFecha(turnoNuevo.getFecha());
             turnos.setHoraInicio(turnoNuevo.getHoraInicio());
             turnos.setHoraFin(turnoNuevo.getHoraFin());

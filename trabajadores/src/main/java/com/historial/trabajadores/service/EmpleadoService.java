@@ -4,9 +4,7 @@ package com.historial.trabajadores.service;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.springframework.stereotype.Service;
-
 
 import com.historial.trabajadores.dto.EmpleadoDTO;
 import com.historial.trabajadores.model.Empleado;

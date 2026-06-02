@@ -40,11 +40,7 @@ public class NotificacionController {
     public ResponseEntity<List<Notificacion>> mostrarGeneral(){
         return ResponseEntity.ok().body(service.verNotificaciones());
     }
-    @PostMapping("/actualizar/{notificacionId}")
-    public ResponseEntity<?> actualizar (@PathVariable Integer notificacionId, @Valid @RequestBody Notificacion notificacion){
-        Notificacion noti = service.actualizarNotificacion(notificacionId, notificacion);
-        return ResponseEntity.ok().body(noti);
-    }
+
     @DeleteMapping("/eliminar/{notificacionId}")
     public ResponseEntity<?> eliminar(@PathVariable Integer notificacionId){
         service.eliminarNotificacion(notificacionId);
