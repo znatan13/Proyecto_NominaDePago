@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.noti.notificacion.modelo.Notificacion;
+import com.noti.notificacion.model.Notificacion;
 import com.noti.notificacion.repository.NotiRepository;
 
 @Service
@@ -22,18 +22,6 @@ public Notificacion crearNotificacion(Notificacion notificacion){
 
 public List<Notificacion> verNotificaciones(){ 
     return repository.findAll();
-    }
-
-
-public Notificacion buscarnNotificacion(Integer empleadoId){
-        if(empleadoId == null){
-        throw new IllegalArgumentException("El empleado no existe.");
-    } 
-    Optional<Notificacion> buscar = repository.findById(empleadoId);
-    if(buscar.isEmpty()){
-        throw new RuntimeException("El empleado no tiene notificaciones");
-    }
-    return buscar.get();
     }
 
 public Notificacion actualizarNotificacion(Integer notificacionId, Notificacion actualizado){

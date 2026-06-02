@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.noti.notificacion.modelo.Notificacion;
+import com.noti.notificacion.model.Notificacion;
 import com.noti.notificacion.service.NotiService;
 
 import jakarta.validation.Valid;
@@ -23,7 +24,7 @@ public class NotificacionController {
     @Autowired
     private NotiService service;
     
-    @PostMapping
+    @PostMapping("/crear")
     public ResponseEntity<?> crearNotificacion(@RequestBody Notificacion notificacion){
         Notificacion notificacionCreada = service.crearNotificacion(notificacion);
         return ResponseEntity.ok().body(notificacionCreada);
@@ -34,15 +35,20 @@ public class NotificacionController {
         Notificacion notificacionActualizada = service.actualizarNotificacion(idNoti, notificacion);
         return ResponseEntity.ok().body(notificacionActualizada);
     }
-
-    @GetMapping("/empleado/{id}")
-    public ResponseEntity<?> buscar(@PathVariable Integer id){
-        Notificacion notificacion = service.buscarnNotificacion(id);
-        return ResponseEntity.ok().body(notificacion);
+    
+    @GetMapping("/general")
+    public ResponseEntity<List<Notificacion>> mostrarGeneral(){
+        return ResponseEntity.ok().body(service.verNotificaciones());
+    }
+    @PostMapping("/actualizar/{notificacionId}")
+    public ResponseEntity<?> actualizar (@PathVariable Integer notificacionId, @Valid @RequestBody Notificacion notificacion){
+        Notificacion noti = service.actualizarNotificacion(notificacionId, notificacion);
+        return ResponseEntity.ok().body(noti);
+    }
+    @DeleteMapping("/eliminar/{notificacionId}")
+    public ResponseEntity<?> eliminar(@PathVariable Integer notificacionId){
+        service.eliminarNotificacion(notificacionId);
+        return ResponseEntity.ok().body("se elimino con exito");
     }
 
-    @GetMapping("/general")
-        public ResponseEntity<List<Notificacion>> mostrarGeneral(){
-            return ResponseEntity.ok().body(service.verNotificaciones());
-        }
 }

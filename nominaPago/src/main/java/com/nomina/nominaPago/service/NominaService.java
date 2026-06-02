@@ -97,7 +97,20 @@ public Nomina crearNomina(Nomina nomina){
     nomina.setSueldoLiquido(sueldoTotal);
 
     validaciones(nomina);
+
+    Notificacion notificacion = new Notificacion();
+
+    notificacion.setEmpleadoId(nomina.getNomEmpleadoId());
+    notificacion.setTitulo("Generacion de nomina");
+    notificacion.setMensaje(
+        "Nomina generada para " +
+        empleado.getNombre() + " " +
+        empleado.getApellido()
+    );
+    notificacion.setFecha(LocalDate.now());
+    restTemplate.postForObject( "http://localhost:8088/notificaciones/crear", notificacion, Notificacion.class);
     return repository.save(nomina);
+
 }
 
 public Nomina buscarEmpleado(Integer nomEmpleadoId){
@@ -169,20 +182,6 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
     dto.setDescripcion_Bono(bono.getDescripcion());
     dto.setSueldo_Total(nomina.getSueldoLiquido());
     dto.setNomina(nomina);
-
-        try {
-        Notificacion notificacion = new Notificacion();
-
-        notificacion.setEmpleadoId(nomEmpleadoId);
-        notificacion.setTitulo("Generacion de nomina");
-        notificacion.setMensaje("Nomina de pago creada para el usuario:\nNombre: "+empleado.getNombre()+" "+empleado.getApellido()+"\nRut: "+empleado.getRut()+"\nSueldo bruto: "+empleado.getSueldoBase()+"\nSueldo liquido: "+nomina.getSueldoLiquido());
-        notificacion.setFecha(LocalDate.now());
-
-        String url5 = "http://localhost:8088/notificaciones";
-        restTemplate.postForObject(url5, notificacion, Notificacion.class);
-        }catch(Exception e){
-            throw new RuntimeException("Error de generar la notificacion");
-        }
 
     return dto;
     }
