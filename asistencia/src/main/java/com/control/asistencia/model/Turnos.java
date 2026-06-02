@@ -12,4 +12,4 @@ public class Turnos {
     private String horaInicio;
     private String horaFin;
 
-} //clase solo para extraer los datos necesarios del microservicio turnos
+} 

@@ -31,8 +31,8 @@ public class manejosErrores {
                 LocalDateTime.now(),
                 400,
                 "Error de datos, verifique bien",
-                error, // Detalle de error del campo
-                request.getRequestURI()); // Url donde ocurrio el error
+                error, 
+                request.getRequestURI()); 
         return ResponseEntity.badRequest().body(errorDTO);
     }
 
@@ -74,7 +74,7 @@ public class manejosErrores {
 
                 ErrorDTO errorDTO = new ErrorDTO(
                     LocalDateTime.now(),
-                    400, // error del cliente 
+                    400,
                     ex.getMessage(),
                     null,
                     request.getRequestURI());

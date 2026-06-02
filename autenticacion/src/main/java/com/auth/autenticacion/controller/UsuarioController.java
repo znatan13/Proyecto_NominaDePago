@@ -32,17 +32,13 @@ public class UsuarioController {
     public UsuarioController(UsuarioService service){
         this.service = service;
     }
-
-    // Get listar todo
     @GetMapping()
     public List<Usuario> listarTodos() {
         return service.listar();
     }
-
-    // Metodo get con dto solo mostrar datos no sensibles del usuario.
     @GetMapping("/listar-dto")
     public ResponseEntity<?> listarUsuariosSeguros() {
-        return ResponseEntity.ok(service.usuariosSeguros()); // Si sale biem retorna un 200
+        return ResponseEntity.ok(service.usuariosSeguros()); 
     }
     
     @GetMapping("/{id}")
@@ -51,30 +47,27 @@ public class UsuarioController {
         return ResponseEntity.ok(buscar);
     }
 
-    // Get buscar email del usuario con DTO para proteger los datos sensibles
     @GetMapping("/buscar/{email}")
     public ResponseEntity<?> buscarEmail(@PathVariable String email) {
         BuscarDatosSegurosDTO existe = service.buscarEmailDTO(email);
         return ResponseEntity.status(200).body(existe);
     }
 
-    // metodo post crear una cuenta de usuario.
+
     @PostMapping("/agregar")
     public ResponseEntity<Usuario> crearUsuario(@Valid @RequestBody Usuario usuario) {
         Usuario nuevo = service.crear(usuario);
         return ResponseEntity.status(201).body(nuevo);
     }
 
-    // metodo post login
+
     @PostMapping("/login")
-    // Login seguro para no mostrar datos sensibles y LoginDTO para que solo ingrese
-    // nombre y password
+
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
         LoginSeguroDTO login = service.loginSeguro(loginDTO.getNombreUsuario(), loginDTO.getPassword());
         return ResponseEntity.ok(login);
     }
 
-    // Metodo Put: Actualizar por id
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<?> actualizarId(@PathVariable Integer id, @Valid @RequestBody Usuario usuario) {
         Usuario actualizar = service.actualizarPorId(id, usuario);

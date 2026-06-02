@@ -21,12 +21,10 @@ public class AsistenciaService {
         this.repository = repository;
     }
 
-    //get listar 
     public List<Asistencia> listarAsistencias(){
         return repository.findAll();
     }
 
-    //Metodo reautilizable
     public void validarRegistroAsistencia(Asistencia asistencia){
 
         if(asistencia == null){
@@ -50,12 +48,10 @@ public class AsistenciaService {
             throw new IllegalArgumentException("La fecha de registro de la asistencia no debe ser nula");
         }
     }
-    //metodo post crear un registro de asistencia
     public Asistencia crearRegistro (Asistencia asistencia){
         validarRegistroAsistencia(asistencia);
         return repository.save(asistencia);
     }
-    //get buscar una asistencia por id
     public Asistencia buscarAsistencia(Integer id){
         if (id == null || id <= 0){
             throw new IllegalArgumentException("El id no debe ser nulo y debe ser mayor a 0");
@@ -66,12 +62,10 @@ public class AsistenciaService {
         }
         return buscarAsistencia.get();
     }
-    //put actualizar asistencia por el id
     public Asistencia actualizarAsistencia(Integer id, Asistencia asistenciaActualizada){
         if(id == null){
             throw new IllegalArgumentException("El id para actualizar no debe ser nulo");    
         }
-        //consultamos si existe o no el id de asistencia
         Optional<Asistencia> existe = repository.findById(id);
         validarRegistroAsistencia(asistenciaActualizada);
         if(existe.isPresent() && asistenciaActualizada != null){
@@ -87,7 +81,6 @@ public class AsistenciaService {
         }
         throw new RuntimeException("No se pudo actualizar ese id " + id + " de asistencia intente de nuevo");
     }
-    //metodo eliminar una asistencia (no muy recomendable)
     public void eliminarRegistro(Integer id){
         if(id == null){
             throw new IllegalArgumentException("El id no puede venir nulo");
@@ -100,11 +93,8 @@ public class AsistenciaService {
 
     }
 
-
-    //-----Metodo DTO entre entidades para conectar microservicios----//
     public AsistenciaCompletaDTO obtenerAsistenciaCompleta(Integer empleadoId, Integer turnoId){
 
-        // se asegura que no sea nulo los ids
         if(empleadoId == null || empleadoId <= 0){
             throw new IllegalArgumentException("El id de empleado no debe ser nulo y debe ser mayor a 0 ");
         }
@@ -113,14 +103,13 @@ public class AsistenciaService {
 
         }
         RestTemplate restTemplate = new RestTemplate();
-        //buscamos el empleado por id
         String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
         Empleado empleado = restTemplate.getForObject(url, Empleado.class);
         if(empleado == null){
             throw new RuntimeException("El empleado no tiene registro u no existe");
         }
 
-        //Buscamos el turno al igual que empleado
+
         String urlTurno = "http://localhost:8082/turnos/buscar/turnoid/" + turnoId;
         Turnos turno = restTemplate.getForObject(urlTurno, Turnos.class);
         if(turno == null){
@@ -130,12 +119,10 @@ public class AsistenciaService {
         List<Asistencia> listarAsistencias = repository.findByEmpleadoIdAndTurnoId(empleadoId, turnoId);
 
         AsistenciaCompletaDTO asistenciaCompletaDTO = new AsistenciaCompletaDTO();
-        //completamos los datos dto del empleado
         asistenciaCompletaDTO.setNombre(empleado.getNombre());
         asistenciaCompletaDTO.setApellido(empleado.getApellido());
         asistenciaCompletaDTO.setEmail(empleado.getEmail());
         asistenciaCompletaDTO.setCargo(empleado.getCargo());
-        //completamos los datos dto de turno
         asistenciaCompletaDTO.setFecha(turno.getFecha());
         asistenciaCompletaDTO.setHoraInicio(turno.getHoraInicio());
         asistenciaCompletaDTO.setHoraFin(turno.getHoraFin());

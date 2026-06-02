@@ -31,25 +31,21 @@ public class AsistenciaController {
     public AsistenciaController(AsistenciaService service){
         this.service = service;
     }
-    //Metodo listar a los registro de asistencias
     @GetMapping()
     public ResponseEntity<List<Asistencia>> listar() {
         return ResponseEntity.ok(service.listarAsistencias());
     }
-    //metodo get buscar asistencia por id
     @GetMapping("/buscar/asistencia/{asistenciaId}")
     public ResponseEntity<?> buscarAsistencia (@PathVariable Integer asistenciaId) {
         Asistencia buscar = service.buscarAsistencia(asistenciaId);
         return ResponseEntity.ok().body(buscar);
     }
     
-    //metodo crear un registro asistencia
     @PostMapping("/crear")
     public ResponseEntity<?> crearRegistro (@Valid @RequestBody Asistencia asistencia){
         Asistencia asistenciaNueva = service.crearRegistro(asistencia);
         return ResponseEntity.status(201).body(asistenciaNueva);
     }
-    //metodo actualizar un registro de asistencia
     @PutMapping("/actualizar/{asistenciaId}")
     public ResponseEntity<?> actualizar(@PathVariable Integer asistenciaId, @Valid @RequestBody Asistencia asistencia ) {
         Asistencia asistenciaActualizada = service.actualizarAsistencia(asistenciaId, asistencia); 

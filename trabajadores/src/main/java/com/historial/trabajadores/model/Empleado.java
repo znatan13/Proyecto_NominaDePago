@@ -45,7 +45,7 @@ public class Empleado {
     private String email;
 
     @NotBlank(message = "El telefono del empleado no puede estar vacio")
-    @Column(nullable = false, unique = true) // Unico porque es un numero de telefono
+    @Column(nullable = false, unique = true)
     private String numeroTelefono;
 
     @NotBlank(message = "La direccion del empleado no puede estar vacia")
@@ -59,7 +59,6 @@ public class Empleado {
     @NotNull(message = "La fecha de contrato del empleado no puede ser nula")
     @Column(nullable = false)
     private LocalDate fechaContrato;
-    //la fecha de baja puede ser null, porque el empleado puede estar activo
     @Column(nullable = true)
     private LocalDate fechaDeBaja;
 

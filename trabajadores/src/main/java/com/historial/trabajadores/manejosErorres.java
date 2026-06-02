@@ -14,10 +14,9 @@ import com.historial.trabajadores.dto.ErrorDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@RestControllerAdvice // se encargara todos los errores del controlador
+@RestControllerAdvice
 public class manejosErorres {
 
-        //manejar errores de validacion.
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<ErrorDTO> manejarValidaciones(
             MethodArgumentNotValidException ex,
@@ -36,7 +35,6 @@ public class manejosErorres {
             return ResponseEntity.badRequest().body(errorDTO);
         }
 
-        // Manejar errores como datos duplicados etc.
         @ExceptionHandler(DataIntegrityViolationException.class)
         public ResponseEntity<ErrorDTO> manejarErrorBaseDatos(
             DataIntegrityViolationException ex,
@@ -44,7 +42,7 @@ public class manejosErorres {
 
                 ErrorDTO errorDTO = new ErrorDTO(
                     LocalDateTime.now(),
-                    400, // El codigo de error 
+                    400, 
                     "Error de integridad de datos, intente de nuevo",
                     null,
                     request.getRequestURI()
@@ -53,7 +51,6 @@ public class manejosErorres {
 
             }
 
-        // manejar errores como empleado no econtrado. etc
         @ExceptionHandler(RuntimeException.class)
         public ResponseEntity<ErrorDTO> manejarErrores(
             RuntimeException ex,
@@ -61,9 +58,9 @@ public class manejosErorres {
 
                 ErrorDTO errorDTO = new ErrorDTO(
                     LocalDateTime.now(),
-                    404, // El codigo de error datos no encontados
-                    ex.getMessage(), // el mensaje de error que lanzara
-                    null, // no hay errores de validacion, por eso es null
+                    404, 
+                    ex.getMessage(),
+                    null,
                     request.getRequestURI());
                     return ResponseEntity.status(404).body(errorDTO);
             }
@@ -74,7 +71,7 @@ public class manejosErorres {
 
                 ErrorDTO errorDTO = new ErrorDTO(
                     LocalDateTime.now(),
-                    400, // El error 400 cliente envia datos invalidos
+                    400, 
                     ex.getMessage(),
                     null,
                     request.getRequestURI());

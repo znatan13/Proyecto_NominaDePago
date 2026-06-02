@@ -10,10 +10,8 @@ import com.auth.autenticacion.model.Usuario;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
-
-    // metodo get buscar nombre
     Optional<Usuario> findByNombreUsuario(String nombreUsuario);
-    // Metodo get buscar gmail
+
     Optional<Usuario> findByEmail(String email);
 
 }

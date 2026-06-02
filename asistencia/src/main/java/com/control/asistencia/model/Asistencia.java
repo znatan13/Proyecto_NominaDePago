@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 public class Asistencia {
 
     @Id
-    //genera atomaticamente un valor al id de asistencia
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer asistenciaId;
 
@@ -39,7 +38,7 @@ public class Asistencia {
     @Column(nullable = false)
     private LocalDate fechaRegistro;
 
-    @Column(nullable = true, length = 200) // es opcional 
+    @Column(nullable = true, length = 200) 
     private String observaciones; 
 
     @NotBlank(message = "El estado del empleado es obligatorio para su asistencia")

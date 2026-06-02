@@ -22,13 +22,9 @@ public class LicenciaService {
     public List<Licencia> listarLicencias() {
         return repository.findAll();
     }
-
-    //Metodo Guardar licencias con fecha de cracion y vencimiento
     public Licencia guardar(Licencia licencia) {
 
         validarLicencia(licencia);
-
-        //Validacion -> dice si el empleado ya tiene licencia activa no puede crear otra licencia.
         boolean licenciaActiva = repository.existsByempleadoidAndEstado(licencia.getEmpleadoid(), "Activo");
 
         if(licenciaActiva){
@@ -41,7 +37,6 @@ public class LicenciaService {
 
         return repository.save(licencia);
     }
-    //Metodo Buscar licencias por id
     public Licencia buscarLicencia(Integer idLicencia) {
 
         if (idLicencia == null || idLicencia <= 0) {
@@ -54,7 +49,6 @@ public class LicenciaService {
 
         return licencia;
     }
-    //Metodo buscar empleado por id
     public List<Licencia> buscarIdEmpleado(Integer empleadoId) {
 
         if(empleadoId == null || empleadoId <= 0) {
@@ -69,7 +63,6 @@ public class LicenciaService {
 
         return licencias;
     }
-    //Actulizar licencias de Activo a Vencido o viceversa
     public void actualizarEstadoLicencia(Licencia licencia) {
 
         if (LocalDate.now().isAfter(licencia.getFechaVencimiento())){
@@ -77,7 +70,6 @@ public class LicenciaService {
             repository.save(licencia);
         }
     }
-    //Metodo actualizar una licencia
     public Licencia actualizarLicencia (Integer idLicencia, Licencia licenciaActualizado) {
 
         if (idLicencia == null || idLicencia <= 0) {
@@ -98,7 +90,6 @@ public class LicenciaService {
 
         return repository.save(licencia);
     }
-    //Validacion de licencias
     public void validarLicencia(Licencia licencia) {
 
         if (licencia == null) {
@@ -116,13 +107,11 @@ public class LicenciaService {
             throw new IllegalArgumentException("El motivo de licencia no puede superar las 300 caracteres");
         } 
     }
-    //Eliminar licencias
     public void eliminarLicencia(Integer idLicencia) {
         Licencia licencia = buscarLicencia(idLicencia);
         repository.delete(licencia);
     }
 
-    //Metodo para conectar microservicios
     public LicenciaEmpleado licenciaEmpleado(Integer empleadoId){
         if(empleadoId == null || empleadoId <= 0){
             throw new IllegalArgumentException("El id del empleado no debe ser nulo y debe ser mayor a 0");         

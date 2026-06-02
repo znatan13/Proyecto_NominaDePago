@@ -31,17 +31,14 @@ public class Turnos {
 
     @Positive(message = "El id del empleado debe ser mayor a 0")
     @Column(nullable = false)
-    //este id lo usaremos para relacionar turno con emopleado
     private Integer empleadoId;
 
     @NotNull(message = "La fecha del turno no puede ser nula")
     @Column(nullable = false, length = 15)
-    //LocalDate nos permite manejar fechas sin horas
     private LocalDate fecha;
 
     @NotBlank(message = "La hora de inicio del empleado no puede estar vacia")
     @Column(nullable = false, length = 5)
-    //LocalTime muestra solo la hora sin fecha
     private String horaInicio;
 
     @NotBlank(message = "La hora de fin del empleado no puede estar vacia")

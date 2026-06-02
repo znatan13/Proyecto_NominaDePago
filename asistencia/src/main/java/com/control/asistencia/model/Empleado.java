@@ -11,4 +11,4 @@ public class Empleado {
     private String  email;
     private String  cargo;
 
-} //esta clase solo nos prestara datos de microservicio empleado.
+} 

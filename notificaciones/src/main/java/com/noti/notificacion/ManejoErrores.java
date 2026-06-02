@@ -17,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class ManejoErrores {
 
-     //manejar errores de validacion.
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<ErrorDTO> manejarValidaciones(
             MethodArgumentNotValidException ex,
@@ -43,7 +42,7 @@ public class ManejoErrores {
 
                 ErrorDTO errorDTO = new ErrorDTO(
                     LocalDateTime.now(),
-                    400, // El codigo de error 
+                    400, 
                     "Error de integridad de datos, intente de nuevo",
                     null,
                     request.getRequestURI()

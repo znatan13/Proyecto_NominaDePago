@@ -22,13 +22,12 @@ import lombok.NoArgsConstructor;
 
 public class Usuario {
 
-    // defino que el id sea autoincrementable en la base de datos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotBlank(message = "No puede tener nombre de usuario vacio")
-    @Column(nullable = false, length = 25, unique = true) // La base de datos tendra un limite de 25 caracteres y nombre unico
+    @Column(nullable = false, length = 25, unique = true)
     private String nombreUsuario;
 
     @NotBlank(message = "La contraseña no puede estar vacia")

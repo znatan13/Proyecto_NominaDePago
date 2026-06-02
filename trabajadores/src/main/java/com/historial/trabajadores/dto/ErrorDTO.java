@@ -16,7 +16,6 @@ public class ErrorDTO {
     private Map<String, String> errores;
     private String path;
 
-    //contructor 
     public ErrorDTO(LocalDateTime timestamp, int status, String mensaje, Map<String, String> errores, String path){
         this.timestamp = timestamp;
         this.status = status;

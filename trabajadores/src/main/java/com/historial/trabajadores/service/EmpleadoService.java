@@ -19,12 +19,10 @@ public class EmpleadoService {
         this.repository = repository;
     }
 
-    // Metodo get listar empleado
     public List<Empleado> listar() {
         return repository.findAll();
     }
 
-    // metodo reatilizable para validar el empleado, se usa en crear y actualizar
     public void validarEmpleado(Empleado empleadoNuevo){
         if(empleadoNuevo == null){
             throw new IllegalArgumentException("El empleado no puede ser nulo");
@@ -43,13 +41,11 @@ public class EmpleadoService {
         }
     }
 
-    // Metodo post crear un empleado
     public Empleado crearEmpleado(Empleado empleadoNuevo) {
         validarEmpleado(empleadoNuevo);
         return repository.save(empleadoNuevo);
     }
 
-    // Metodo put actualizar por id
     public Empleado actualizarPorId(Integer id, Empleado empleadoNuevo) {
         if (id == null) {
             throw new IllegalArgumentException("El id no puede estar null");
@@ -60,7 +56,7 @@ public class EmpleadoService {
             throw new RuntimeException("El id que desea actualizar no existe");
         }
 
-        validarEmpleado(empleadoNuevo); // validamos el empleado del metodo reautilzado
+        validarEmpleado(empleadoNuevo); 
         
         Empleado empleado = existe.get();
         empleado.setRut(empleadoNuevo.getRut());
@@ -80,7 +76,6 @@ public class EmpleadoService {
        return repository.save(empleado);
     }
 
-    // Metodo delete eliminar por id
     public void eliminarEmpleado(Integer id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
@@ -89,8 +84,6 @@ public class EmpleadoService {
         }
     }
 
-    // ------ Metodos DTO ---------
-    // Metodo para reutilizar codigo en los get buscar.
     public EmpleadoDTO empleadoDto(Empleado empleado) {
         EmpleadoDTO dto = new EmpleadoDTO();
         dto.setRut(empleado.getRut());
@@ -103,22 +96,16 @@ public class EmpleadoService {
         return dto;
     }
 
-    // Metodo DTO buscar por id
-    //muy util porque el id es unico de cada empleado
     public EmpleadoDTO buscarIdDTO(Integer id) {
         if (id == null || id <= 0){
             throw new IllegalArgumentException("El id no puede ser nulo ni menor o igual a 0");
         }
-        // buscamos el id y validamos que exista para luego hacerlo en DTO
         Optional<Empleado> empleadoBuscado = repository.findById(id);
         if (empleadoBuscado.isEmpty()) {
             throw new RuntimeException("El id que desea buscar no existe");  
         }
         return empleadoDto(empleadoBuscado.get());
     }
-
-    // Metodo DTO buscar por rut
-    //buscar rut hace similitud con id porque rut es unico de cada empleado.
     public EmpleadoDTO buscarRutDTO(String rut) {
         if(rut == null || rut.isBlank()){
             throw new IllegalArgumentException("El rut del empleado no puede estar en nulo ni en blanco");
@@ -130,8 +117,6 @@ public class EmpleadoService {
         return empleadoDto(empleadoBuscado.get());
     }
 
-    // metodo DTO buscar por email
-    //el email es unico y mas adelante cuando tengamos tokens lo conectamos con el login
     public EmpleadoDTO buscarEmailDTO(String email) {
         if(email == null || email.isBlank()){
             throw new IllegalArgumentException("El email del empleado no puede estar en nulo ni en blanco");

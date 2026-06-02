@@ -26,8 +26,6 @@ public class bonoService {
     public List<Bono> listarBonos(){
         return repository.findAll();
     }
-
-    //metodo buscar un bono por id
     public Bono buscarBono (Integer bonoId){
         if(bonoId == null){
             throw new IllegalArgumentException("El id de bono no debe ser nulo");
@@ -49,7 +47,6 @@ public class bonoService {
         }
         return buscarIdEmpleado;
     }
-    //metodo para trabajar solo 1 empleado de la lista para usarlo en nomina
     public Bono bonoUnico (Integer empleadoId){
         if(empleadoId ==null || empleadoId <= 0 ){
             throw new IllegalArgumentException("El id del empleado no debe ser nulo y debe ser mayor a 0");
@@ -61,7 +58,6 @@ public class bonoService {
         return bonoUnico.get(0);
 
     }
-    //metodo reautilizable en crear un bono y actualizar para evitar doble logica
     public void validarBono(Bono bono){
 
         if(bono == null){
@@ -92,9 +88,8 @@ public class bonoService {
             throw new IllegalArgumentException("La fecha de entrega del bono no debe ser nula");
         }
     }
-    //metodo crear un bono
     public Bono crearBono (Bono bonoNuevo){
-        validarBono(bonoNuevo); // metodo reautilizable
+        validarBono(bonoNuevo);
         Notificacion notificacion = new Notificacion();
         RestTemplate restTemplate = new RestTemplate();
 
@@ -110,7 +105,6 @@ public class bonoService {
         return repository.save(bonoNuevo);
     }
 
-    //metodo actualizar un bono
     public Bono actualizarBono (Integer bonoId, Bono bonoActualizado){
 
         if(bonoId == null || bonoId <= 0){
@@ -132,7 +126,6 @@ public class bonoService {
         return repository.save(bono);
     }
 
-    //metodo eliminar un bono
     public void eliminarBono (Integer bonoId){
         if(bonoId == null){
             throw new IllegalArgumentException("El Id Bono no puede venir nulo");
@@ -143,7 +136,6 @@ public class bonoService {
             throw new RuntimeException("El bono con id: " + bonoId + " no existe");
         }
     }
-    //Metodo para conectar microservicios
     public BonosEmpleado bonosEmpleado (Integer empleadoId){
         if(empleadoId == null || empleadoId <= 0){
             throw new IllegalArgumentException("El id de empleado no debe ser nulo y debe ser mayor a 0");

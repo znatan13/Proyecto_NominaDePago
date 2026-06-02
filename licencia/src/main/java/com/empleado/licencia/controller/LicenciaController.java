@@ -29,31 +29,26 @@ public class LicenciaController {
     public LicenciaController(LicenciaService service){
         this.service = service;
     }
-    //Metodo de listar las licencias disponibles
     @GetMapping()
     public ResponseEntity<List<Licencia>> listar() {
         return ResponseEntity.ok().body(service.listarLicencias());
     }
-    //Metodo de crear licencia
     @PostMapping("/crear")
     public ResponseEntity<?> crearLicencia(@Valid @RequestBody Licencia licenciaNueva) {
         Licencia licenciaCreado = service.guardar(licenciaNueva);
         return ResponseEntity.status(201).body(licenciaCreado);
     }
 
-    //metodo de actualizar Licencia
     @PutMapping("/actualizar/{idLicencia}")
     public ResponseEntity<?> actualizarLicencia(@PathVariable Integer idLicencia, @RequestBody Licencia licenciaNueva) {
         Licencia licenciaActualizar = service.actualizarLicencia(idLicencia, licenciaNueva);
         return ResponseEntity.ok().body(licenciaActualizar);
     }
-    //Metodo buscar licencia por id
     @GetMapping("/buscar/licencia/{idLicencia}")
     public ResponseEntity<?> buscarLicencia(@PathVariable Integer idLicencia) {
         Licencia buscar = service.buscarLicencia(idLicencia);
         return ResponseEntity.ok().body(buscar);
     }
-    //Metodo de buscar el empleado por id y mostrar las licencias
     @GetMapping("/buscar/empleado/{empleadoId}")    
     public ResponseEntity<?> buscarEmpleadoId(@PathVariable Integer empleadoId) {
         List<Licencia> buscar = service.buscarIdEmpleado(empleadoId);

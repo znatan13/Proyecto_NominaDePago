@@ -7,10 +7,6 @@ import lombok.Data;
 @Data
 public class UsuarioSeguroDTO {
 
-    /*
-     * La base de datos tendra un limite de 25 caracteres y nombre
-     * unico
-     */
     @NotBlank(message = "No puede tener nombre de usuario vacio")
     private String nombreUsuario;
 

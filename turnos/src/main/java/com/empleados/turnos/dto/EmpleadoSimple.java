@@ -13,7 +13,6 @@ public class EmpleadoSimple {
     private String apellido;
     private String cargo;
 
-    //Creamos una lista , para la bd local y mostrar los turnos para los empleados
     private List<Turnos> turnos;
 
 }
