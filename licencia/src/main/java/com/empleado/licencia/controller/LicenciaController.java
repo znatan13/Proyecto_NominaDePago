@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.empleado.licencia.service.LicenciaService;
 import com.empleado.licencia.dto.LicenciaEmpleado;
 import com.empleado.licencia.model.Licencia;
+import com.empleado.licencia.service.LicenciaService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
 
@@ -29,6 +32,15 @@ public class LicenciaController {
     public LicenciaController(LicenciaService service){
         this.service = service;
     }
+    @Operation(
+        summary = "Listar Licencias",
+        description = "Obtiene una lista con todas las licencias registrados en el sistema"
+)
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista obtenida correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos Invalidos"),
+        @ApiResponse(responseCode = "500", description = "Error Interno del servidor")
+})
     @GetMapping()
     public ResponseEntity<List<Licencia>> listar() {
         return ResponseEntity.ok().body(service.listarLicencias());
