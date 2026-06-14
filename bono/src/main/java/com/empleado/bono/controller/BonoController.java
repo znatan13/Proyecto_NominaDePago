@@ -2,7 +2,7 @@ package com.empleado.bono.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +26,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/bonos")
 public class BonoController {
 
-    @Autowired
     private bonoService service;
 
     public BonoController(bonoService service){
@@ -35,7 +34,7 @@ public class BonoController {
 
     @Operation(
         summary = "Listar Bonos",
-        description = "Obtiene una lista de los empleados con sus respectivos bonos"
+        description = "Obtiene una lista de todos los bonos disponibles en el sistema"
 )
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista Obtenida Correctamente"),
@@ -48,11 +47,11 @@ public class BonoController {
     }
 
     @Operation(
-        summary = "Agregar Bonos",
-        description = "Opcion para poder agregar un bono al empleado"
+        summary =     "Agregar Bonos",
+        description = "Opcion para poder agregar un bono al empleado al sistema"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Bono Agregado Correctamente"),
+        @ApiResponse(responseCode = "201", description = "Bono Agregado Correctamente"),
         @ApiResponse(responseCode = "400", description = "Datos Invalidos"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
@@ -63,11 +62,11 @@ public class BonoController {
     }
 
     @Operation(
-        summary = "Actualizar Bonos por ID",
+        summary =     "Actualizar Bonos por ID",
         description = "Opcion para Actualizar un bono al empleado por id"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Modificacion de Empleado Correctamente"),
+        @ApiResponse(responseCode = "200", description = "Modificacion de Bono Correctamente"),
         @ApiResponse(responseCode = "400", description = "No existe el ID para modificarlo"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
@@ -78,12 +77,13 @@ public class BonoController {
     }
 
     @Operation(
-        summary = "Buscar bonos por ID",
-        description = "Opcion para buscar el bono de un empleado por ID"
+        summary =     "Buscar bonos por ID",
+        description = "Opcion para buscar un bono en el sistema a traves de su ID"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Se a encontrado el ID del emplado"),
-        @ApiResponse(responseCode = "400", description = "ID del empleado no existe "),
+        @ApiResponse(responseCode = "200", description = "Se ha encontrado el ID del emplado"),
+        @ApiResponse(responseCode = "400", description = "Datos invalido"),
+        @ApiResponse(responseCode = "404", description = "No existe informacion"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @GetMapping("/buscar/bono/{bonoId}")
@@ -93,12 +93,13 @@ public class BonoController {
     }
 
     @Operation(
-        summary = "Buscar Empleado por su ID",
+        summary = "Buscar ID de Empleado",
         description = "Opcion para buscar el ID de empleado"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Se a encontrado el ID del empleado"),
-        @ApiResponse(responseCode = "400", description = "ID del empleado no encontrado o no existe"),
+        @ApiResponse(responseCode = "200", description = "Se a encontrado el ID del empleado con exito"),
+        @ApiResponse(responseCode = "404", description = "ID del empleado no encontrado o no existe"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @GetMapping("/buscar/empleado/{empleadoId}")    
@@ -106,6 +107,17 @@ public class BonoController {
         List<Bono> buscar = service.buscarIdEmpleado(empleadoId);
         return ResponseEntity.ok().body(buscar);
     }
+
+    @Operation(
+        summary = "Obtener bonos y datos del empleado",
+        description = "Lista todos los bonos de un empleado y informacion a traves de su ID"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Informacion obtenida con exito"),
+        @ApiResponse(responseCode = "404", description = "No existe datos"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+        @ApiResponse(responseCode = "500", description = "Error del sistema")
+    })
 
     
     @GetMapping("/empleados/{empleadoId}")
@@ -115,12 +127,13 @@ public class BonoController {
     }
 
     @Operation(
-        summary = "Buscar el Bono unico por el ID de empleado",
-        description = "Opcion de buscar su bono unico con el id del empleado"
+        summary =     "Obtener bonos y datos del empleado",
+        description = "Obtiene solo un bono asociado a un empleado mediante su identificador"
 )
 @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Se a encontrado el ID del empleado para el Bono unico"),
-        @ApiResponse(responseCode = "400", description = "ID de empleado no encontrado o no existe"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+        @ApiResponse(responseCode = "404", description = "ID de empleado no encontrado o no existe"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @GetMapping("/buscar/bonoUnico/{empleadoId}")
@@ -130,12 +143,13 @@ public class BonoController {
     }
 
     @Operation(
-        summary = "Eliminar Bonos por ID",
-        description = "Opcion para eliminar el bono a un empleado por id"
+        summary =     "Eliminar Bonos por ID",
+        description = "Elimina un bono del sistema a traves de su ID"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Se a eliminado el bono del empleado"),
-        @ApiResponse(responseCode = "400", description = "ID de empleado no encontrado o no existe"),
+        @ApiResponse(responseCode = "200", description = "Se a eliminado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+        @ApiResponse(responseCode = "404", description = "ID de empleado no encontrado o no existe"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @DeleteMapping("/eliminar/{bonoId}")
