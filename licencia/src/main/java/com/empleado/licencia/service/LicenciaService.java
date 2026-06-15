@@ -19,9 +19,14 @@ public class LicenciaService {
     
     private LicenciarRespository repository;
 
+    public LicenciaService(LicenciarRespository respository){
+        this.repository = respository;
+    }
+
     public List<Licencia> listarLicencias() {
         return repository.findAll();
     }
+
     public Licencia guardar(Licencia licencia) {
 
         validarLicencia(licencia);
