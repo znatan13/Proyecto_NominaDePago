@@ -48,10 +48,10 @@ public class LicenciaController {
 
     @Operation(
         summary = "Agregar Licencias",
-        description = "Opcion para poder agregar una licencia al empleado"
+        description = "Opcion para poder agregar una licencia al sistema"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Licencia Agregado Correctamente"),
+        @ApiResponse(responseCode = "201", description = "Licencia Agregada Correctamente"),
         @ApiResponse(responseCode = "400", description = "Datos Invalidos"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
@@ -63,11 +63,12 @@ public class LicenciaController {
 
     @Operation(
         summary = "Actualizar Licencias por ID",
-        description = "Opcion para Actualizar una licencia al empleado por id"
+        description = "Opcion para Actualizar una licencia en el sistema por id"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Modificacion de Empleado Correctamente"),
-        @ApiResponse(responseCode = "400", description = "No existe el ID para modificarlo"),
+        @ApiResponse(responseCode = "200", description = "Licencia modificada correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+        @ApiResponse(responseCode = "404", description = "No existe datos para modificar"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @PutMapping("/actualizar/{idLicencia}")
@@ -78,11 +79,12 @@ public class LicenciaController {
 
     @Operation(
         summary = "Buscar licencias por ID",
-        description = "Opcion para buscar la licencia de un empleado por ID"
-)
+        description = "Opcion para buscar informacion de una licencia a traves de su ID")
+
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Se a encontrado el ID del emplado"),
-        @ApiResponse(responseCode = "400", description = "ID del empleado no existe "),
+        @ApiResponse(responseCode = "200", description = "Licencia buscada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+        @ApiResponse(responseCode = "404", description = "No existe datos"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @GetMapping("/buscar/licencia/{idLicencia}")
@@ -96,8 +98,9 @@ public class LicenciaController {
         description = "Opcion para buscar el ID de empleado"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Se a encontrado el ID del empleado"),
-        @ApiResponse(responseCode = "400", description = "ID del empleado no encontrado o no existe"),
+        @ApiResponse(responseCode = "200", description = "Busqueda exitosa"),
+        @ApiResponse(responseCode = "404", description = "No existen datos"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @GetMapping("/buscar/empleado/{empleadoId}")    
@@ -107,12 +110,13 @@ public class LicenciaController {
     }
 
     @Operation(
-        summary = "Buscar la licencia por el ID de empleado",
-        description = "Opcion de buscar su licencia con el id del empleado"
+        summary = "Buscar la licencia con informacion de un empleado",
+        description = "Busca una licencia conbinada con informacion del microservicio de empleados por id"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Se a encontrado el ID del empleado con su licencia"),
-        @ApiResponse(responseCode = "400", description = "ID de empleado no encontrado o no existe"),
+        @ApiResponse(responseCode = "200", description = "Se a encontrado informacion correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
+        @ApiResponse(responseCode = "404", description = "No existe datos"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @GetMapping("/buscar/empleadoLicencia/{empleadoId}")
@@ -122,12 +126,13 @@ public class LicenciaController {
     }
     
     @Operation(
-        summary = "Eliminar Licencia por ID",
-        description = "Opcion para eliminar la licencia a un empleado por id"
+        summary = "Eliminar licencia por ID",
+        description = "Se elimina una licencia del sistema por id"
 )
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Se a eliminado la licencia del empleado"),
-        @ApiResponse(responseCode = "400", description = "ID de empleado no encontrado o no existe"),
+        @ApiResponse(responseCode = "200", description = "Se a eliminado la licencia del sistema con exito"),
+        @ApiResponse(responseCode = "404", description = "No existen datos"),
+        @ApiResponse(responseCode = "400", description = "Datos invalidos"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
     @DeleteMapping("/eliminar/{idLicencia}")
