@@ -47,7 +47,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "500", description = "Error del sistema")
 })
 
-    @GetMapping()
+    @GetMapping("/listar")
     public List<Usuario> listarTodos() {
         return service.listar();
     }
