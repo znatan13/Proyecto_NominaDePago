@@ -42,7 +42,7 @@ public class AsistenciaController {
         @ApiResponse(responseCode = "500", description = "Error del sistema")
     })
 
-    @GetMapping()
+    @GetMapping("/listar")
     public ResponseEntity<List<Asistencia>> listar() {
         return ResponseEntity.ok(service.listarAsistencias());
     }
