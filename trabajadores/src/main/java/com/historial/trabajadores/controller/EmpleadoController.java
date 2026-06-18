@@ -46,7 +46,7 @@ public class EmpleadoController {
         @ApiResponse(responseCode = "500", description = "Error del sistema")
     })
 
-    @GetMapping()
+    @GetMapping("/listar")
     public ResponseEntity<List<Empleado>> listarEmpleados() {
         return ResponseEntity.ok(service.listar());
     }
