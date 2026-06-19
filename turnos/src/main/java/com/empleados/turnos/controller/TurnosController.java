@@ -45,7 +45,7 @@ public class TurnosController {
         @ApiResponse(responseCode = "400", description = "Datos invalidos"),
         @ApiResponse(responseCode = "500", description = "Error del sistema")
     })
-    @GetMapping
+    @GetMapping("/listar")
     public ResponseEntity<List<Turnos>> listar() {
         return ResponseEntity.ok(service.listar());
     }
