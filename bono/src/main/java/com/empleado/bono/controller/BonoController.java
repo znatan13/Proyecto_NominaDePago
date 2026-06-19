@@ -41,7 +41,7 @@ public class BonoController {
         @ApiResponse(responseCode = "400", description = "Datos Invalidos"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 })
-    @GetMapping()
+    @GetMapping("/listar")
     public ResponseEntity<List<Bono>> listar(){
         return ResponseEntity.ok().body(service.listarBonos());
     }
