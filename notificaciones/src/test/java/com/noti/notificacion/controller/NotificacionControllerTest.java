@@ -45,11 +45,11 @@ public class NotificacionControllerTest {
     }
     @Test
     void actualizarNotificacion() throws Exception{
-                String Json = """
+            String Json = """
                 {"notificacionId" : 1,
                 "empleadoId" : 1,
                 "titulo" : "Test",
-                "mensaje" : "TestTest}
+                "mensaje" : "TestTest"}
                 """;
         Notificacion simulado = new Notificacion(1,1,"Test","TestTest",null);
         when(service.actualizarNotificacion(1,simulado)).thenReturn(simulado);

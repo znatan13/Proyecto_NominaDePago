@@ -40,7 +40,7 @@ public class NotificacionController {
     @PostMapping("/crear")
     public ResponseEntity<?> crearNotificacion(@RequestBody Notificacion notificacion){
         Notificacion notificacionCreada = service.crearNotificacion(notificacion);
-        return ResponseEntity.ok().body(notificacionCreada);
+        return ResponseEntity.status(201).body(notificacionCreada);
     }
     @Operation(
         summary = "Actualizacion de notificaciones",
