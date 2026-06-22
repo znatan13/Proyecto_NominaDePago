@@ -41,7 +41,7 @@ public class LicenciaController {
         @ApiResponse(responseCode = "400", description = "Datos Invalidos"),
         @ApiResponse(responseCode = "500", description = "Error Interno del servidor")
 })
-    @GetMapping()
+    @GetMapping("/listar")
     public ResponseEntity<List<Licencia>> listar() {
         return ResponseEntity.ok().body(service.listarLicencias());
     }
