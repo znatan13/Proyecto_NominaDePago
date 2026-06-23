@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/notificaciones")
+@RequestMapping("/notificacion/notificaciones")
 public class NotificacionController {
     @Autowired
     private NotiService service;
