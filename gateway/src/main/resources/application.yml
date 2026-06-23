@@ -63,4 +63,4 @@ eureka:
         instance-id: 127.0.0.1:${spring.application.name}:${server.port}
 logging:
     level:
-        rg.springframework.cloud.gateway: DEBUG
+        org.springframework.cloud.gateway: DEBUG
