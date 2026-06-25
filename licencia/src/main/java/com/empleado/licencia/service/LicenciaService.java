@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import com.empleado.licencia.dto.LicenciaEmpleado;
 import com.empleado.licencia.model.Empleado;
 import com.empleado.licencia.model.Licencia;
+import com.empleado.licencia.model.Notificacion;
 import com.empleado.licencia.repository.LicenciarRespository;
 
 @Service
@@ -28,9 +29,9 @@ public class LicenciaService {
     }
 
     public Licencia guardar(Licencia licencia) {
-
+        RestTemplate restTemplate = new RestTemplate();
         validarLicencia(licencia);
-        boolean licenciaActiva = repository.existsByempleadoidAndEstado(licencia.getEmpleadoid(), "Activo");
+        boolean licenciaActiva = repository.existsByEmpleadoIdAndEstado(licencia.getEmpleadoId(), "Activo");
 
         if(licenciaActiva){
             throw new RuntimeException("Ya tiene una licencia asignada");
@@ -39,7 +40,23 @@ public class LicenciaService {
         licencia.setFechaCreacion(LocalDate.now());
         licencia.setFechaVencimiento(licencia.getFechaCreacion().plusDays(7));
         licencia.setEstado("Activo");
-
+        String url = "http://localhost:8081/empleados/buscar/id/" + licencia.getEmpleadoId();
+        Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+        
+        if (empleado == null){
+            throw new RuntimeException("El Id de empleado no puede ser nulo");
+        }
+        
+        Notificacion notificacion = new Notificacion();
+       
+        notificacion.setEmpleadoId(licencia.getEmpleadoId());
+        notificacion.setTitulo("Se Presenta licencia");
+        notificacion.setMensaje("El empleado: " + empleado.getNombre() +  "  "  +
+        "presenta una licencia su motivo es: " + "  "  + licencia.getMotivoLicencia() +  " " +
+        "Fecha de inicio de licencia: " + licencia.getFechaCreacion() + "Fecha de termino de licencia: " + licencia.getFechaVencimiento()
+    );
+        notificacion.setFecha(LocalDate.now());
+        restTemplate.postForObject("http://localhost:8088/notificaciones/crear", notificacion, Notificacion.class);
         return repository.save(licencia);
     }
     public Licencia buscarLicencia(Integer idLicencia) {
@@ -60,7 +77,7 @@ public class LicenciaService {
             throw new IllegalArgumentException("El Id de empleado debe ser mayor a 0 y no debe ser nulo");
         }
 
-        List<Licencia> licencias = repository.findByEmpleadoid(empleadoId);
+        List<Licencia> licencias = repository.findByEmpleadoId(empleadoId);
 
         if (licencias.isEmpty()) {
             throw new RuntimeException("No existen una licencia para el empleado");
@@ -87,7 +104,7 @@ public class LicenciaService {
         validarLicencia(licenciaActualizado);
         Licencia licencia = existe.get();
 
-        licencia.setEmpleadoid(licenciaActualizado.getEmpleadoid());
+        licencia.setEmpleadoId(licenciaActualizado.getEmpleadoId());
         licencia.setFechaCreacion(licenciaActualizado.getFechaCreacion());
         licencia.setFechaVencimiento(licenciaActualizado.getFechaVencimiento());
         licencia.setEstado(licenciaActualizado.getEstado());
@@ -101,7 +118,7 @@ public class LicenciaService {
             throw new IllegalArgumentException("La licencia no puede ser nula");
         }
 
-        if (licencia.getEmpleadoid() == null || licencia.getEmpleadoid() < 1) {
+        if (licencia.getEmpleadoId() == null || licencia.getEmpleadoId() <= 0) {
             throw new IllegalArgumentException("El id empleado debe ser mayor a 0");
         }
         if(licencia.getEstado() != null && licencia.getEstado().length() > 30){
@@ -128,7 +145,7 @@ public class LicenciaService {
         if(empleado == null){
             throw new RuntimeException("El empleado no existe");
         }
-        List<Licencia> listarLicenciaEmpleados = repository.findByEmpleadoid(empleadoId);
+        List<Licencia> listarLicenciaEmpleados = repository.findByEmpleadoId(empleadoId);
 
         LicenciaEmpleado licenciaEmpleado = new LicenciaEmpleado();
         

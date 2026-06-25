@@ -11,7 +11,7 @@ import com.empleado.licencia.model.Licencia;
 @Repository
 public interface LicenciarRespository extends JpaRepository<Licencia, Integer> {
 
-    List <Licencia> findByEmpleadoid(Integer empleadoid);
-    boolean existsByempleadoidAndEstado(Integer empleadoId, String estado);
+    List <Licencia> findByEmpleadoId(Integer empleadoId);
+    boolean existsByEmpleadoIdAndEstado(Integer empleadoId, String estado);
 
 }

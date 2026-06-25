@@ -99,7 +99,7 @@ public class LicenciaControllerTest {
     void buscarLicencia() throws Exception{
         Licencia simular = new Licencia();
 
-        simular.setEmpleadoid(2);
+        simular.setEmpleadoId(2);
         simular.setEstado("Activo");
         simular.setFechaCreacion(LocalDate.parse("2026-06-21"));
         simular.setFechaVencimiento(LocalDate.parse("2026-06-22"));

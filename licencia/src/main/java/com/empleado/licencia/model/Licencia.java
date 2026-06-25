@@ -27,7 +27,7 @@ public class Licencia {
 
     @Positive(message= "El id del empleado debe ser mayor a 0")
     @Column(nullable = false)
-    private Integer empleadoid;
+    private Integer empleadoId;
 
     @Column(nullable = false)
     private LocalDate fechaCreacion;
