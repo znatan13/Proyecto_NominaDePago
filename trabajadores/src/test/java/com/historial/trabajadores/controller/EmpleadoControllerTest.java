@@ -44,7 +44,7 @@ public class EmpleadoControllerTest {
             "+56931212907",
             "chile",
             "casado",
-            LocalDate.parse("2026-06-17"), // LocalDate.parse permite agregar fecgas de tipo LocalDate sin error
+            LocalDate.parse("2026-06-17"), 
             null,
             "backend",
             "Activo",

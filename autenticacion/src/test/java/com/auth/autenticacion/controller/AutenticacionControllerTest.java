@@ -137,10 +137,4 @@ public class AutenticacionControllerTest {
         .andExpect(status().isOk());
     }
 
-
-    /* Pendiente metodo Login */
-
-    /*.with(csrf())) -> simulamos un token para evitar error 403
-    solo para auth no usen esto en los suyos sigan al profe de su ppt nomas, yo use esto por la depedencia seguridad
-    */
 }

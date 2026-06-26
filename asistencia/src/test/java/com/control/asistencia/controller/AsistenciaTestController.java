@@ -45,7 +45,7 @@ public class AsistenciaTestController {
             )
         );
       when(service.listarAsistencias()).thenReturn(lista);
-      mockMvc.perform(get("/asistencias/listar"))
+      mockMvc.perform(get("/asistencia/asistencias/listar"))
       .andExpect(status().isOk());
     }
 
@@ -62,7 +62,7 @@ public class AsistenciaTestController {
         asistencia.setEstadoAsistencia("Ausente");
 
         when(service.buscarAsistencia(1)).thenReturn(asistencia);
-        mockMvc.perform(get("/asistencias/buscar/asistencia/1"))
+        mockMvc.perform(get("/asistencia/asistencias/buscar/asistencia/1"))
         .andExpect(status().isOk());
     }
 
@@ -86,7 +86,7 @@ public class AsistenciaTestController {
             "Ausencia"
         );
     when(service.crearRegistro(any(Asistencia.class))).thenReturn(asistencia);
-    mockMvc.perform(post("/asistencias/crear")
+    mockMvc.perform(post("/asistencia/asistencias/crear")
     .contentType(APPLICATION_JSON)
     .content(JSON)).andExpect(status().isCreated());
     }
@@ -112,14 +112,14 @@ public class AsistenciaTestController {
                     "Puntual"
             );
         when(service.actualizarAsistencia(1, actualizada)).thenReturn(actualizada);
-        mockMvc.perform(put("/asistencias/actualizar/1")
+        mockMvc.perform(put("/asistencia/asistencias/actualizar/1")
         .contentType(APPLICATION_JSON)
         .content(JSON)).andExpect(status().isOk());
     }
 
     @Test
     void eliminar() throws Exception{
-        mockMvc.perform(delete("/asistencias/eliminar/1"))
+        mockMvc.perform(delete("/asistencia/asistencias/eliminar/1"))
         .andExpect(status().isOk());
     }
 
@@ -140,7 +140,7 @@ public class AsistenciaTestController {
 
         when(service.obtenerAsistenciaCompleta(7, 1))
         .thenReturn(regCompletaDTO);
-        mockMvc.perform(get("/asistencias/registro/empleado/7/turno/1"))
+        mockMvc.perform(get("/asistencia/asistencias/registro/empleado/7/turno/1"))
         .andExpect(status().isOk());
     }
 }
