@@ -13,8 +13,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI turnosApi(){
         return new OpenAPI().info( new Info()
-        .title("API REST Historial de empleados")
-        .description("API de historial de empleados documentado")
+        .title("API REST Historial de turnos")
+        .description("API de historial de turnos documentado")
         .version("1.0")
         .contact( new Contact()
             .name("Manuel mora")
