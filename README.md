@@ -20,8 +20,10 @@
 
 *Eureka Server : http://localhost:8761 -> Url que dara ascceso a la consola de eureka y visualizar los microservicios registrados
 
-*Api Gateway : http://localhost:8060 -> Url que dara frutos en ejecutar en postman permitiendo probar los microservicios 1 por 1 , si la necesidad de aprenderse sus puertos.
+*Api Gateway : http://localhost:8060 -> Url que dara frutos en ejecutar en postman permitiendo probar los microservicios 1 por 1 , sin la necesidad de aprenderse sus puertos.
 
-* Por ultimo se aplico OpenApi (Swagger) para dar una mejor calidad al sistema, documentando cada edpoints, por si necesita ser visualizado de mejor forma si la necesidad de revisar codigo fuente.
+*Pruebas unitarias : Se aplico pruebas unitarias en cada uno de los microservicios testeando y evintando futuros errores. ademas mejora la calidad del codigo.
+
+* Por ultimo se aplico OpenApi (Swagger) para dar una mejor calidad al sistema, documentando cada edpoints, por si necesita ser visualizado de mejor forma sin la necesidad de revisar codigo fuente.
 
 *URL ejemplo: http://localhost8080/swagger-ui/index.html. si usted ejecuta esta url en su navegador podra visualizar todos los edpoints documentados y podra probar edpoint en tiempo real correspondiente de microservicios autenticacion.
