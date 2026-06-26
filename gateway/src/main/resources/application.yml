@@ -22,7 +22,7 @@ spring:
                       - Path=/empleados, /empleados/**
 
                     - id: ruta-turnos
-                      uri: lb://turnos
+                      uri: lb://TURNOS
                       predicates:
                       - Path=/turnos, /turnos/**
                     
@@ -34,12 +34,12 @@ spring:
                     - id: ruta-bono
                       uri: lb://BONO
                       predicates:
-                      - Path=/bono, /bono/**
+                      - Path=/bonos, /bonos/**
                     
                     - id: ruta-licencia
                       uri: lb://LICENCIA
                       predicates:
-                      - Path=/licencia, /licencia/**
+                      - Path=/licencias, /licencias/**
                     
                     - id: ruta-nominaPago
                       uri: lb://NOMINAPAGO
