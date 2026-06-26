@@ -19,14 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-
-
 import com.auth.autenticacion.dto.BuscarDatosSegurosDTO;
 import com.auth.autenticacion.dto.UsuarioSeguroDTO;
 import com.auth.autenticacion.model.Usuario;
 import com.auth.autenticacion.service.UsuarioService;
-
-
 
 @WebMvcTest(UsuarioController.class)
 public class AutenticacionControllerTest {
