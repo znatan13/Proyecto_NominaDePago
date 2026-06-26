@@ -44,7 +44,7 @@ public class AutenticacionControllerTest {
             new Usuario(1,"manuemora","12345678","manuel@gmail.com","Admin")
         );
         when(service.listar()).thenReturn(usuarios);
-        mockMvc.perform(get("/usuarios/listar")).andExpect(status().isOk());
+        mockMvc.perform(get("/autenticacion/usuarios/listar")).andExpect(status().isOk());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class AutenticacionControllerTest {
 
         List<UsuarioSeguroDTO> lista = List.of(usuarioSeguroDTO);
         when(service.usuariosSeguros()).thenReturn(lista);
-        mockMvc.perform(get("/usuarios/listar-dto")).andExpect(status().isOk());
+        mockMvc.perform(get("/autenticacion/usuarios/listar-dto")).andExpect(status().isOk());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class AutenticacionControllerTest {
         buscarDatosSegurosDTO.setRol("Rol");
 
         when(service.buscarIdDTO(1)).thenReturn(buscarDatosSegurosDTO);
-        mockMvc.perform(get("/usuarios/1")).andExpect(status().isOk());
+        mockMvc.perform(get("/autenticacion/usuarios/1")).andExpect(status().isOk());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class AutenticacionControllerTest {
         buscarDatosSegurosDTO.setRol("Admin");
 
         when(service.buscarEmailDTO("manuel@gmail.com")).thenReturn(buscarDatosSegurosDTO);
-        mockMvc.perform(get("/usuarios/buscar/manuel@gmail.com")).andExpect(status().isOk());
+        mockMvc.perform(get("/autenticacion/usuarios/buscar/manuel@gmail.com")).andExpect(status().isOk());
     }
 
     @Test
@@ -104,7 +104,7 @@ public class AutenticacionControllerTest {
             "Admin"
         );
         when(service.crear(any(Usuario.class))).thenReturn(simulado);
-        mockMvc.perform(post("/usuarios/agregar")
+        mockMvc.perform(post("/autenticacion/usuarios/agregar")
         .with(csrf())
         .contentType(APPLICATION_JSON)
         .content(usuarioJson)).andExpect(status().isCreated());
@@ -128,7 +128,7 @@ public class AutenticacionControllerTest {
                 "admin"
         );
         when(service.actualizarPorId(2, simulacion)).thenReturn(simulacion);
-        mockMvc.perform(put("/usuarios/actualizar/2")
+        mockMvc.perform(put("/autenticacion/usuarios/actualizar/2")
         .with(csrf())
         .contentType(APPLICATION_JSON)
         .content(usuarioJson)).andExpect(status().isOk());
@@ -137,7 +137,7 @@ public class AutenticacionControllerTest {
     @Test
     @WithMockUser(username = "manuelmora", roles = "admin")
     void eliminarUsuarios() throws Exception{
-        mockMvc.perform(delete("/usuarios/eliminar/2").with(csrf()))
+        mockMvc.perform(delete("/autenticacion/usuarios/eliminar/2").with(csrf()))
         .andExpect(status().isOk());
     }
 
