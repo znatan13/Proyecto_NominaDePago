@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.empleado.licencia.dto.LicenciaEmpleado;
 import com.empleado.licencia.model.Empleado;
@@ -31,6 +33,19 @@ public class LicenciaService {
     public Licencia guardar(Licencia licencia) {
         RestTemplate restTemplate = new RestTemplate();
         validarLicencia(licencia);
+
+        try{
+
+            String url = "http://localhost:8081/empleados/buscar/id/" + licencia.getEmpleadoId();
+            Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+            
+            if(empleado == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No existe id de empleado");
+            }
+        }catch(HttpClientErrorException.NotFound error){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No existe id de empleado, ingrese otro valido");
+        }
+
         boolean licenciaActiva = repository.existsByEmpleadoIdAndEstado(licencia.getEmpleadoId(), "Activo");
 
         if(licenciaActiva){
@@ -56,7 +71,7 @@ public class LicenciaService {
         "Fecha de inicio de licencia: " + licencia.getFechaCreacion() + "Fecha de termino de licencia: " + licencia.getFechaVencimiento()
     );
         notificacion.setFecha(LocalDate.now());
-        restTemplate.postForObject("http://localhost:8088/notificaciones/crear", notificacion, Notificacion.class);
+        restTemplate.postForObject("http://localhost:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
         return repository.save(licencia);
     }
     public Licencia buscarLicencia(Integer idLicencia) {

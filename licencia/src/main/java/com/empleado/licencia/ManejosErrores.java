@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.empleado.licencia.dto.ErrorDTO;
 
@@ -78,5 +79,22 @@ public class ManejosErrores {
         );
         return ResponseEntity.badRequest().body(errorDTO);
     }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorDTO> manejarErroresMicroservicios(
+        ResponseStatusException exception,
+        HttpServletRequest request){
+
+            int status = exception.getStatusCode().value();
+
+            ErrorDTO errorDTO = new ErrorDTO(
+                LocalDateTime.now(),
+                status,
+                exception.getReason(),
+                null,
+                request.getRequestURI()
+            );
+            return ResponseEntity.status(status).body(errorDTO);
+        }
 
 }
