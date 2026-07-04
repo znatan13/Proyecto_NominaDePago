@@ -1,12 +1,13 @@
 package com.empleados.turnos.service;
 
-
-
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.empleados.turnos.dto.EmpleadoSimple;
 import com.empleados.turnos.model.Empleado;
@@ -22,36 +23,30 @@ public class TurnosService {
         this.repository = repository;
     }
 
-    // Metodo Get: listar todos los turnos
     public List<Turnos> listar() {
         return repository.findAll();
     }
 
-    // Metodo Get: buscar por id
-    //buscamos id turno para mostrar datos del turno.
     public Turnos buscarPorId(Integer turnoId) {
-        //evitamos nullPointerException
+
         if (turnoId == null || turnoId <= 0){
             throw new IllegalArgumentException("El id que busca no debe ser nulo y debe ser mayor a 0");
         }
-        //Buscamos si existe el turno por id
+
         Optional<Turnos> buscarTurno = repository.findById(turnoId);
-        // si no existe lanzamos una exception
-        if (buscarTurno.isEmpty()) { // si el id no es nulo y mayor a 0 lo busca
+
+        if (buscarTurno.isEmpty()) {
             throw new RuntimeException("El Turno no existe");
         }
         return buscarTurno.get();
     }
-
-    // Metodo get: buscar por id del empleado
-    //buscamos id del empleado para mostrar los turnos de ese empleado.
     public List<Turnos> buscarIdEmpleado(Integer empleadoId) {
 
         if(empleadoId == null || empleadoId <= 0){
             throw new IllegalArgumentException("El id del empleado no debe ser nulo y debe ser mayor a 0");
         }
         List<Turnos> buscarTurnoEmpleado = repository.findByEmpleadoId(empleadoId);
-        // isEmpty dice que no existe
+      
         if(buscarTurnoEmpleado.isEmpty()){
             throw new RuntimeException("No existe un turno para ese id de empleado");
         }
@@ -59,7 +54,6 @@ public class TurnosService {
         
     }
 
-    //metodo para validar datos de turnos y se va a reautilizar
     public void validarTurno(Turnos turno){
 
         if(turno == null){
@@ -71,26 +65,32 @@ public class TurnosService {
 
     }
 
-    // Metodo post crear un turno
     public Turnos crearTurno(Turnos turno) {
-        /*
-         * No se valida duplicados aqui ni en la base de datos;porque el mismo empleado
-         * puede tener muchos turnos de
-         * trabajo. nada es unico en este microservicio excepto el id turno que lo
-         * asigna la base de datos.
-         */
+        RestTemplate restTemplate = new RestTemplate();
         validarTurno(turno);
+
+        try{
+
+            String url = "http://localhost:8081/empleados/buscar/id/" +  turno.getEmpleadoId();
+            Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+
+            if(empleado == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El id no existe");
+            }
+
+        }catch(HttpClientErrorException error){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El Id de Empleado no existe, Ingrese otro valido");
+        }
         return repository.save(turno);
     }
 
-    // Metodo Put; Actualizar un turno.
     public Turnos actualizarId(Integer turnoId, Turnos turnoNuevo) {
         if (turnoId == null) {
             throw new RuntimeException("El id que desea actualizar no existe");
         }
         Optional<Turnos> existe = repository.findById(turnoId);
 
-        validarTurno(turnoNuevo); //Validamos el turno del metodo reautilizado
+        validarTurno(turnoNuevo); 
 
         if (existe.isPresent() && turnoNuevo != null) {
             Turnos turnos = existe.get();
@@ -104,7 +104,6 @@ public class TurnosService {
         throw new RuntimeException("No existe ese Id de turno");
     }
 
-    // Metodo delete : eliminar turno por id
     public void  eliminarPorId(Integer turnoId) {
 
         if(turnoId == null){
@@ -118,8 +117,6 @@ public class TurnosService {
         }  
     }
 
-    //Metodo para unir turnos con empleados solo por el id
-    //hacemos una relacion un empleado puede tener muchos turnos.
     public EmpleadoSimple obtenerTurnosConEmpleados(Integer empleadoId){
 
        if(empleadoId == null || empleadoId <= 0){
