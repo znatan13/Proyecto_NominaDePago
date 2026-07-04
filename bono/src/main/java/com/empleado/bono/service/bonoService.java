@@ -4,8 +4,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.empleado.bono.dto.BonosEmpleado;
 import com.empleado.bono.model.Bono;
@@ -90,9 +93,20 @@ public class bonoService {
     }
     public Bono crearBono (Bono bonoNuevo){
         validarBono(bonoNuevo);
-        Notificacion notificacion = new Notificacion();
         RestTemplate restTemplate = new RestTemplate();
+    
+        try{
 
+            String url ="http://localhost:8081/empleados/buscar/id/" + bonoNuevo.getEmpleadoId();
+            Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+            
+            if(empleado == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id de empleado no existe");
+            }
+        }catch(HttpClientErrorException.NotFound ex){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id no existe, ingrese otro valido");
+        }
+        Notificacion notificacion = new Notificacion();
         notificacion.setEmpleadoId(bonoNuevo.getEmpleadoId());
         notificacion.setTitulo("Generacion de bono");
         notificacion.setMensaje(
@@ -101,7 +115,7 @@ public class bonoService {
             bonoNuevo.getBonoEmpleado()
     );
         notificacion.setFecha(LocalDate.now());
-        restTemplate.postForObject( "http://localhost:8088/notificaciones/crear", notificacion, Notificacion.class);
+        restTemplate.postForObject( "http://localhost:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
         return repository.save(bonoNuevo);
     }
 
