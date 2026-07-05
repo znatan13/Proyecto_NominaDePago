@@ -3,8 +3,11 @@ package com.control.asistencia.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.control.asistencia.dto.AsistenciaCompletaDTO;
 import com.control.asistencia.model.Asistencia;
@@ -49,7 +52,30 @@ public class AsistenciaService {
         }
     }
     public Asistencia crearRegistro (Asistencia asistencia){
+        RestTemplate restTemplate = new RestTemplate();
         validarRegistroAsistencia(asistencia);
+        
+        try{
+            String url = "http://localhost:8081/empleados/buscar/id/" + asistencia.getEmpleadoId();
+            Empleado empleado = restTemplate.getForObject(url, Empleado.class);
+
+            if(empleado == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "empleado no existe");
+            }
+        }catch(HttpClientErrorException error){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id empleado no existente para registrar asistencia, Ingrese otro");
+        }
+
+        try{
+            String url = "http://localhost:8082/turnos/buscar/turnoid/" + asistencia.getTurnoId();
+            Turnos turnos = restTemplate.getForObject(url, Turnos.class);
+
+            if(turnos == null){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "turno no registrado");
+            }
+        }catch(HttpClientErrorException error){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "turno no registrado, ingrese otro valido");
+        }
         return repository.save(asistencia);
     }
     public Asistencia buscarAsistencia(Integer id){

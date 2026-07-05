@@ -81,6 +81,7 @@ public class TurnosService {
         }catch(HttpClientErrorException error){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El Id de Empleado no existe, Ingrese otro valido");
         }
+        
         return repository.save(turno);
     }
 
