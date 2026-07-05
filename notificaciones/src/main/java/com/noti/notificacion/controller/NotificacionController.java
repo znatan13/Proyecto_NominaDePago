@@ -2,7 +2,7 @@ package com.noti.notificacion.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +24,12 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/notificacion/notificaciones")
 public class NotificacionController {
-    @Autowired
+
     private NotiService service;
+
+    public NotificacionController(NotiService service){
+        this.service = service;
+    }
     
     @Operation(
         summary = "Creacion de notificacion",
