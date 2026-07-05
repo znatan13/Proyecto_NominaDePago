@@ -5,8 +5,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.nomina.nominaPago.dto.NominaSimple;
 import com.nomina.nominaPago.model.Bono;
@@ -61,17 +64,19 @@ public Nomina crearNomina(Nomina nomina){
     }
 
     RestTemplate restTemplate = new RestTemplate();
-    String url = "http://localhost:8081/empleados/buscar/id/"+nomina.getNomEmpleadoId();
-    Empleado empleado;
+    Empleado empleado = null;
 
     try{
-        empleado = restTemplate.getForObject(url, Empleado.class);
-    }catch(Exception error){
-        throw new RuntimeException("No se pudo conectar con empleados");
-    }
+        String URL = "http://localhost:8081/empleados/buscar/id/" + nomina.getNomEmpleadoId();
+        empleado = restTemplate.getForObject(URL, Empleado.class);
 
-    if(empleado == null){
-        throw new RuntimeException("El empleado buscado no existe");}
+        if(empleado == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No existe empleado");
+        }
+    }catch(HttpClientErrorException.NotFound error){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No existe ID de empleado, Ingrese otro valido.");
+
+    }
 
     double sueldoBase = empleado.getSueldoBase();
     String AFP = empleado.getAfp();
@@ -80,13 +85,7 @@ public Nomina crearNomina(Nomina nomina){
 
 
     String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/" + nomina.getNomEmpleadoId();
-    Bono bono;
-
-    try{
-        bono = restTemplate.getForObject(url2, Bono.class);
-    }catch(Exception error){
-        throw new RuntimeException("No se pudo conectar con bonos");
-    }
+    Bono bono = restTemplate.getForObject(url2, Bono.class);
 
     if (bono != null){
         String nomBono = bono.getNombreBono();
@@ -99,16 +98,16 @@ public Nomina crearNomina(Nomina nomina){
     validaciones(nomina);
 
     Notificacion notificacion = new Notificacion();
-
     notificacion.setEmpleadoId(nomina.getNomEmpleadoId());
     notificacion.setTitulo("Generacion de nomina");
     notificacion.setMensaje(
         "Nomina generada para " +
         empleado.getNombre() + " " +
-        empleado.getApellido()
+        empleado.getApellido() + " " + "con sueldo liquido de un total de: " + " " +
+        nomina.getSueldoLiquido()
     );
     notificacion.setFecha(LocalDate.now());
-    restTemplate.postForObject( "http://localhost:8088/notificaciones/crear", notificacion, Notificacion.class);
+    restTemplate.postForObject( "http://localhost:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
     return repository.save(nomina);
 
 }

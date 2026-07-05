@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.nomina.nominaPago.dto.ErrorDTO;
 
@@ -58,5 +59,20 @@ public class ManejosErrores {
                     null
                 );
                 return ResponseEntity.status(400).body(errorDTO);
+        }
+        @ExceptionHandler(ResponseStatusException.class)
+        public ResponseEntity<ErrorDTO> manejosErroresMicroservicios(
+            ResponseStatusException ex,
+            HttpServletRequest request){
+
+                int status = ex.getStatusCode().value();
+
+                ErrorDTO errorDTO = new ErrorDTO(
+                    LocalDateTime.now(),
+                    status,
+                    ex.getReason(),
+                    request.getRequestURI(),
+                    null);
+                return ResponseEntity.status(status).body(errorDTO);
         }
 }
