@@ -71,7 +71,7 @@ public class TurnosService {
 
         try{
 
-            String url = "http://localhost:8081/empleados/buscar/id/" +  turno.getEmpleadoId();
+            String url = "http://trabajadores:8081/empleados/buscar/id/" +  turno.getEmpleadoId();
             Empleado empleado = restTemplate.getForObject(url, Empleado.class);
 
             if(empleado == null){
@@ -126,7 +126,7 @@ public class TurnosService {
        
        RestTemplate restTemplate = new RestTemplate();
 
-       String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
+       String url = "http://trabajadores:8081/empleados/buscar/id/" + empleadoId;
        Empleado empleado = restTemplate.getForObject(url, Empleado.class);
        
        if(empleado == null){

@@ -97,7 +97,7 @@ public class bonoService {
     
         try{
 
-            String url ="http://localhost:8081/empleados/buscar/id/" + bonoNuevo.getEmpleadoId();
+            String url ="http://trabajadores:8081/empleados/buscar/id/" + bonoNuevo.getEmpleadoId();
             Empleado empleado = restTemplate.getForObject(url, Empleado.class);
             
             if(empleado == null){
@@ -115,7 +115,7 @@ public class bonoService {
             bonoNuevo.getBonoEmpleado()
     );
         notificacion.setFecha(LocalDate.now());
-        restTemplate.postForObject( "http://localhost:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
+        restTemplate.postForObject( "http://notificacion:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
         return repository.save(bonoNuevo);
     }
 
@@ -156,7 +156,7 @@ public class bonoService {
         }
         RestTemplate restTemplate = new RestTemplate();
 
-        String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
+        String url = "http://trabajadores:8081/empleados/buscar/id/" + empleadoId;
         Empleado empleado = restTemplate.getForObject(url, Empleado.class);
 
         if(empleado == null){

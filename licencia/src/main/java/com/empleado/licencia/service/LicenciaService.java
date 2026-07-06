@@ -36,7 +36,7 @@ public class LicenciaService {
 
         try{
 
-            String url = "http://localhost:8081/empleados/buscar/id/" + licencia.getEmpleadoId();
+            String url = "http://trabajadores:8081/empleados/buscar/id/" + licencia.getEmpleadoId();
             Empleado empleado = restTemplate.getForObject(url, Empleado.class);
             
             if(empleado == null){
@@ -55,7 +55,7 @@ public class LicenciaService {
         licencia.setFechaCreacion(LocalDate.now());
         licencia.setFechaVencimiento(licencia.getFechaCreacion().plusDays(7));
         licencia.setEstado("Activo");
-        String url = "http://localhost:8081/empleados/buscar/id/" + licencia.getEmpleadoId();
+        String url = "http://trabajadores:8081/empleados/buscar/id/" + licencia.getEmpleadoId();
         Empleado empleado = restTemplate.getForObject(url, Empleado.class);
         
         if (empleado == null){
@@ -71,7 +71,7 @@ public class LicenciaService {
         "Fecha de inicio de licencia: " + licencia.getFechaCreacion() + "Fecha de termino de licencia: " + licencia.getFechaVencimiento()
     );
         notificacion.setFecha(LocalDate.now());
-        restTemplate.postForObject("http://localhost:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
+        restTemplate.postForObject("http://notificacion:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
         return repository.save(licencia);
     }
     public Licencia buscarLicencia(Integer idLicencia) {
@@ -155,7 +155,7 @@ public class LicenciaService {
         }
         RestTemplate restTemplate = new RestTemplate();
 
-        String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
+        String url = "http://trabajadores:8081/empleados/buscar/id/" + empleadoId;
         Empleado empleado = restTemplate.getForObject(url, Empleado.class);
         if(empleado == null){
             throw new RuntimeException("El empleado no existe");

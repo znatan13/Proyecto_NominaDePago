@@ -56,7 +56,7 @@ public class AsistenciaService {
         validarRegistroAsistencia(asistencia);
         
         try{
-            String url = "http://localhost:8081/empleados/buscar/id/" + asistencia.getEmpleadoId();
+            String url = "http://trabajadores:8081/empleados/buscar/id/" + asistencia.getEmpleadoId();
             Empleado empleado = restTemplate.getForObject(url, Empleado.class);
 
             if(empleado == null){
@@ -67,7 +67,7 @@ public class AsistenciaService {
         }
 
         try{
-            String url = "http://localhost:8082/turnos/buscar/turnoid/" + asistencia.getTurnoId();
+            String url = "http://turno:8082/turnos/buscar/turnoid/" + asistencia.getTurnoId();
             Turnos turnos = restTemplate.getForObject(url, Turnos.class);
 
             if(turnos == null){
@@ -129,14 +129,14 @@ public class AsistenciaService {
 
         }
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8081/empleados/buscar/id/" + empleadoId;
+        String url = "http://trabajadores:8081/empleados/buscar/id/" + empleadoId;
         Empleado empleado = restTemplate.getForObject(url, Empleado.class);
         if(empleado == null){
             throw new RuntimeException("El empleado no tiene registro u no existe");
         }
 
 
-        String urlTurno = "http://localhost:8082/turnos/buscar/turnoid/" + turnoId;
+        String urlTurno = "http://turno:8082/turnos/buscar/turnoid/" + turnoId;
         Turnos turno = restTemplate.getForObject(urlTurno, Turnos.class);
         if(turno == null){
             throw new RuntimeException("No existe el turno u no esta registrado");

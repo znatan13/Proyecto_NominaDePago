@@ -67,7 +67,7 @@ public Nomina crearNomina(Nomina nomina){
     Empleado empleado = null;
 
     try{
-        String URL = "http://localhost:8081/empleados/buscar/id/" + nomina.getNomEmpleadoId();
+        String URL = "http://trabajadores:8081/empleados/buscar/id/" + nomina.getNomEmpleadoId();
         empleado = restTemplate.getForObject(URL, Empleado.class);
 
         if(empleado == null){
@@ -84,7 +84,7 @@ public Nomina crearNomina(Nomina nomina){
     Double sueldoTotal;
 
 
-    String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/" + nomina.getNomEmpleadoId();
+    String url2 = "http://bono:8084/bonos/buscar/bonoUnico/" + nomina.getNomEmpleadoId();
     Bono bono = restTemplate.getForObject(url2, Bono.class);
 
     if (bono != null){
@@ -107,7 +107,7 @@ public Nomina crearNomina(Nomina nomina){
         nomina.getSueldoLiquido()
     );
     notificacion.setFecha(LocalDate.now());
-    restTemplate.postForObject( "http://localhost:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
+    restTemplate.postForObject( "http://notificacion:8088/notificacion/notificaciones/crear", notificacion, Notificacion.class);
     return repository.save(nomina);
 
 }
@@ -130,7 +130,7 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
 
     buscarNomina(nomEmpleadoId);
 
-    String url = "http://localhost:8081/empleados/buscar/id/"+nomina.getNomEmpleadoId();
+    String url = "http://trabajadores:8081/empleados/buscar/id/"+nomina.getNomEmpleadoId();
     Empleado empleado;
     try{    
         empleado = restTemplate.getForObject(url, Empleado.class);
@@ -142,7 +142,7 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
         throw new RuntimeException("El empleado buscado no existe");
     }
     
-    String url2 = "http://localhost:8084/bonos/buscar/bonoUnico/"+nomina.getNomEmpleadoId();
+    String url2 = "http://bono:8084/bonos/buscar/bonoUnico/"+nomina.getNomEmpleadoId();
     Bono bono;
 
     try{
@@ -156,7 +156,7 @@ public NominaSimple nominaDTO(Integer nomEmpleadoId){
     }
 
 
-    String ulr3 = "http://localhost:8085/licencias/buscar/empleadoLicencia/"+nomina.getNomEmpleadoId();
+    String ulr3 = "http://licencia:8085/licencias/buscar/empleadoLicencia/"+nomina.getNomEmpleadoId();
     Licencia licencia;
     try{
         licencia = restTemplate.getForObject(ulr3, Licencia.class);
