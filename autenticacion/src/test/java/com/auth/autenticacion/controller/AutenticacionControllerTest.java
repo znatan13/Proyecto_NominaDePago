@@ -1,5 +1,6 @@
 package com.auth.autenticacion.controller;
 
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import com.auth.autenticacion.dto.BuscarDatosSegurosDTO;
+import com.auth.autenticacion.dto.LoginSeguroDTO;
 import com.auth.autenticacion.dto.UsuarioSeguroDTO;
 import com.auth.autenticacion.model.Usuario;
 import com.auth.autenticacion.service.UsuarioService;
@@ -135,6 +137,27 @@ public class AutenticacionControllerTest {
     void eliminarUsuarios() throws Exception{
         mockMvc.perform(delete("/autenticacion/usuarios/eliminar/2").with(csrf()))
         .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "manuemora", roles = "admin")
+    void login() throws Exception{
+        String json = """
+                {   "nombreUsuario" : "manuelCr7",
+                    "password" : "12345678"
+                }
+                """;
+
+        LoginSeguroDTO loginSeguroDTO = new LoginSeguroDTO();
+        loginSeguroDTO.setNombreUsuario("manuelCr7");
+        loginSeguroDTO.setEmail("manolito7@gmail.com");
+        loginSeguroDTO.setRol("Admin");
+
+        when(service.loginSeguro("manuelCr7", "12345678")).thenReturn(loginSeguroDTO);
+        mockMvc.perform(post("/autenticacion/usuarios/login")
+        .contentType(APPLICATION_JSON)
+        .content(json)).andExpect(status().isOk());
+
     }
 
 }
