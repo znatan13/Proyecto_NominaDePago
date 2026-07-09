@@ -27,3 +27,6 @@
 * Por ultimo se aplico OpenApi (Swagger) para dar una mejor calidad al sistema, documentando cada edpoints, por si necesita ser visualizado de mejor forma sin la necesidad de revisar codigo fuente.
 
 *URL ejemplo: http://localhost8080/swagger-ui/index.html. si usted ejecuta esta url en su navegador podra visualizar todos los edpoints documentados y podra probar edpoint en tiempo real correspondiente de microservicios autenticacion.
+
+Implementacion de docker a los microservicios: Permite que los microservicios se despliegue en contenedores permitiendo aislamiento, y portabilidad, eliminando la dependencia de configuraciones del entorno local y facilitando su despliegue.
+* Para ejecutar docker en el proyecto use  el comando --> docker compose up --build
